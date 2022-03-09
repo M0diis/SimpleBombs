@@ -1,0 +1,10 @@
+name: SimpleBombs
+author: M0dii
+main: me.m0dii.bombs.SimpleBombs
+version: 1.0
+softdepend: [WorldGuard, WorldEdit, HolographicDisplays]
+api-version: 1.13
+commands:
+  bomb:
+    description: Main command.
+    permission: simplebombs.use

@@ -1,0 +1,40 @@
+config-reloaded: '&aReloaded the config!'
+explosion-message: '&aYou have set a tier %tier% prison bomb off!'
+no-permission-command: '&aYou do not have the right permission for this command!'
+no-permission-bomb: '&aYou do not have the right permission for this bomb!'
+bomb-received: '&aYou have received a tier %tier% prison bomb (x%amount%)!'
+usage: '&aTry using /bomb give <player> <bombID> | or /bomb reload'
+invalid-player: '&aThis player is not valid! Check spelling!'
+invalid-bomb-id: '&aThis bomb ID is not valid, check your config file!'
+
+bombs:
+  1:
+    name: '&aBomb &f&l1'
+    material: FIRE_CHARGE
+    lore:
+      - '&cRight click this to throw it!'
+      - '&aThis bomb does a tier 1 explosion!'
+    fortune: 1 # How many times the drops will be doubled.
+    radius: 3 # Item drops increases by 2.5 for every broken block.
+    permission: 'bombs.1' # Without this permission, the player won't be able to use this bomb.
+    detonation-time: 1 # Time before detonation.
+    detonation-text: '&c&l! %time%'
+    throw-strength: 1.5
+    effect: 'EXPLOSION_LARGE'
+    destroy-liquids: true
+    entity-damage: 1 # Hearts of damage.
+  2:
+    name: '&aBomb &f&l2'
+    material: FIRE_CHARGE
+    lore:
+      - '&cRight click this to throw it.'
+      - '&aThis bomb does a tier 2 explosion!'
+    fortune: 2
+    radius: 5
+    permission: 'bombs.2'
+    detonation-time: 2
+    detonation-text: '&c&l! %time%'
+    throw-strength: 1.5
+    effect: 'EXPLOSION_LARGE'
+    destroy-liquids: true
+    entity-damage: 1
