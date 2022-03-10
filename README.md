@@ -2,7 +2,7 @@
 
 [resourceId]: 100596
 
-[buildImage]: https://github.com/M0diis/M0-CoreCord/actions/workflows/gradle.yml/badge.svg
+[buildImage]: https://github.com/M0diis/SimpleBombs/actions/workflows/gradle.yml/badge.svg
 [releaseImage]: https://img.shields.io/github/v/release/M0diis/SimpleBombs.svg?label=github%20release
 [updatedImage]: https://badges.pufler.dev/updated/M0diis/SimpleBombs
 [licenseImage]: https://img.shields.io/github/license/M0diis/SimpleBombs.svg
