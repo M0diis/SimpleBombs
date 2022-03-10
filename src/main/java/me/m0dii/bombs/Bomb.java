@@ -40,6 +40,9 @@ public class Bomb
     
     private final Map<String, String> customProperties = new HashMap<>();
     
+    private boolean ignorePerm;
+    private boolean sendMessage;
+    
     public Bomb(int id, String name, Material material, List<String> lore, double throwStrength, int radius, int fortune,
                 int time,
                 String permission)
@@ -70,6 +73,26 @@ public class Bomb
         copy.setGlowing(glowing);
         copy.setBombType(type);
         return copy;
+    }
+    
+    public void setSendMessage(boolean sendMessage)
+    {
+        this.sendMessage = sendMessage;
+    }
+    
+    public void setIgnorePerm(boolean ignorePerm)
+    {
+        this.ignorePerm = ignorePerm;
+    }
+    
+    public boolean doIgnorePermission()
+    {
+        return ignorePerm;
+    }
+    
+    public boolean doSendMessage()
+    {
+        return sendMessage;
     }
     
     public void setHologramText(String text)

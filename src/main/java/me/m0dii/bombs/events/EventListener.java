@@ -25,7 +25,6 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 public class EventListener implements Listener
 {
@@ -65,7 +64,7 @@ public class EventListener implements Listener
         
         Bomb bomb = plugin.getBomb(Utils.getBombID(item.getItemMeta().getDisplayName()));
     
-        if(!p.hasPermission(bomb.getPermission()))
+        if(bomb.doIgnorePermission() && !p.hasPermission(bomb.getPermission()))
         {
             p.sendMessage(Utils.format(plugin.getConfig().getString("no-permission-bomb")));
             
@@ -261,7 +260,8 @@ public class EventListener implements Listener
             {
                 String name = b.getType().name().toUpperCase();
             
-                if(name.contains("WATER") || name.contains("LAVA"))
+                if(name.contains("WATER") || name.contains("LAVA")
+                || b.getType().equals(Material.BEDROCK))
                 {
                     continue;
                 }
@@ -294,13 +294,18 @@ public class EventListener implements Listener
                 newLoc.setDirection(getRandomDirection());
     
                 copy.setName(bomb.getName() + " " + i);
+                copy.setIgnorePerm(true);
+                copy.setSendMessage(false);
                 
                 Bukkit.getPluginManager().callEvent(new BombThrowEvent(player, copy, null, newLoc));
             }
         }
-    
-        player.sendMessage(Utils.format(plugin.getConfig().getString("explosion-message").replace("%tier%",
-                bomb.getId() + "")));
+        
+        if(bomb.doSendMessage())
+        {
+            player.sendMessage(Utils.format(plugin.getConfig().getString("explosion-message").replace("%tier%",
+                    bomb.getId() + "")));
+        }
     }
     
     private Vector getRandomDirection()
