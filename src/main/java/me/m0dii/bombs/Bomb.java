@@ -110,6 +110,10 @@ public class Bomb
         copy.setDestroyIsWhitelist(destroyIsWhitelist);
         copy.setCheckedBlocks(checkedBlocks);
         copy.setSendMessage(sendMessage);
+        
+        copy.explodeSound = explodeSound;
+        copy.throwSound = throwSound;
+
         return copy;
     }
     
