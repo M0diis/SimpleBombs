@@ -5,6 +5,7 @@ version: ${version}
 softdepend: [WorldGuard, WorldEdit, HolographicDisplays]
 api-version: 1.13
 commands:
-  bomb:
+  simplebombs:
     description: Main command.
     permission: simplebombs.use
+    aliases: [bomb, spb]

@@ -103,10 +103,15 @@ public class BombCommand implements CommandExecutor, TabCompleter
     
             receiver.getInventory().addItem(item);
     
-            receiver.sendMessage(Utils.format(plugin.getConfig().getString("bomb-received")
-                    .replace("%tier%", id + "")
-                    .replace("%amount%", amount + "")));
-    
+            String msg = plugin.getConfig().getString("bomb-received");
+            
+            if(msg != null)
+            {
+                receiver.sendMessage(Utils.format(msg
+                        .replace("%tier%", id + "")
+                        .replace("%amount%", amount + "")));
+            }
+            
             return;
         }
     
@@ -114,29 +119,29 @@ public class BombCommand implements CommandExecutor, TabCompleter
     }
     
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args)
+    public List<String> onTabComplete(@Nonnull CommandSender sender, @Nonnull Command command,
+                                      @Nonnull String label, String[] args)
     {
         List<String> completes = new ArrayList<>();
         
-        if(args.length == 0)
+        if(args.length == 1)
         {
             completes.add("reload");
             completes.add("give");
         }
         
-        if(args.length == 1 && args[0].equalsIgnoreCase("give"))
+        if(args.length == 2 && args[0].equalsIgnoreCase("give"))
         {
             for(Player p : Bukkit.getOnlinePlayers())
             {
-                if(p.getName().toLowerCase().contains(args[0].toLowerCase()))
+                if(p.getName().toLowerCase().contains(args[1].toLowerCase()))
                 {
                     completes.add(p.getName());
                 }
             }
         }
         
-        
-        if(args.length == 2 && args[0].equalsIgnoreCase("give"))
+        if(args.length == 3 && args[0].equalsIgnoreCase("give"))
         {
             completes.addAll(plugin.getBombs().keySet().stream().map(String::valueOf).toList());
         }

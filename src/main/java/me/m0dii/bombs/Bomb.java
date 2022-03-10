@@ -109,8 +109,9 @@ public class Bomb
             
             if(glowing)
             {
-                meta.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
+                meta.addEnchant(Enchantment.DURABILITY, 1, true);
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             }
             
             meta.setLore(newLore);
