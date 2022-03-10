@@ -30,7 +30,7 @@ bombs:
     throw-strength: 1.5
     effect: 'EXPLOSION_LARGE' # Particle list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
     destroy-liquids: true
-    entity-damage: 1 # Hearts of damage.
+    entity-damage: 0 # Hearts of damage.
   2:
     name: '&aBomb &f&l2'
     material: FIRE_CHARGE
@@ -42,7 +42,7 @@ bombs:
     permission: 'simplebombs.tier.2'
     detonation-time: 2
     detonation-text: '&c&l! %time%'
-    throw-strength: 1.5
+    throw-strength: 2
     effect: 'EXPLOSION_LARGE'
     destroy-liquids: true
     entity-damage: 1

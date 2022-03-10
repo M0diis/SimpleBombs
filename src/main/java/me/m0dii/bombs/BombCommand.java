@@ -48,6 +48,13 @@ public class BombCommand implements CommandExecutor, TabCompleter
     
         if(args.length == 1 && args[0].equalsIgnoreCase("reload"))
         {
+            if(!sender.hasPermission("simplebombs.command.reload"))
+            {
+                sender.sendMessage(Utils.format(plugin.getConfig().getString("no-permission-command")));
+                
+                return;
+            }
+            
             plugin.reloadConfig();
             
             plugin.generateBombs();
@@ -59,6 +66,13 @@ public class BombCommand implements CommandExecutor, TabCompleter
     
         if(args.length >= 3 && args[0].equalsIgnoreCase("give"))
         {
+            if(!sender.hasPermission("simplebombs.command.give"))
+            {
+                sender.sendMessage(Utils.format(plugin.getConfig().getString("no-permission-command")));
+        
+                return;
+            }
+            
             if(args[1] == null)
             {
                 sender.sendMessage(Utils.format(plugin.getConfig().getString("usage")));
@@ -75,7 +89,13 @@ public class BombCommand implements CommandExecutor, TabCompleter
                 return;
             }
     
-            int id = Integer.parseInt(args[2]);
+            int id = 1;
+            
+            try
+            {
+                id = Integer.parseInt(args[2]);
+            }
+            catch(NumberFormatException ignored) { }
     
             Bomb bomb = plugin.getBomb(id);
     
@@ -143,7 +163,10 @@ public class BombCommand implements CommandExecutor, TabCompleter
         
         if(args.length == 3 && args[0].equalsIgnoreCase("give"))
         {
-            completes.addAll(plugin.getBombs().keySet().stream().map(String::valueOf).toList());
+            for(Integer key : plugin.getBombs().keySet())
+            {
+                completes.add(key + "");
+            }
         }
         
         return completes;
