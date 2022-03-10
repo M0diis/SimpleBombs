@@ -46,3 +46,22 @@ bombs:
     effect: 'EXPLOSION_LARGE'
     destroy-liquids: true
     entity-damage: 1
+    custom:
+      explosion-type: 'SCATTER' # Scatter will spread the explosion in a circle.
+      bomb-type: 3 # The bomb type that will be used.
+      amount: 3 # The amount of bomb-type bombs that will spawn.
+  3:
+    name: '&aScatter Bomb &f&l2'
+    material: FIRE_CHARGE
+    glowing: true
+    lore:
+      - '&cRight click this to throw it.'
+    fortune: 1
+    radius: 1
+    permission: 'simplebombs.tier.3'
+    detonation-time: 2
+    detonation-text: '&c&l! %time%'
+    throw-strength: 5
+    effect: 'EXPLOSION_LARGE'
+    destroy-liquids: true
+    entity-damage: 1

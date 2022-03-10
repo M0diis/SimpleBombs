@@ -1,6 +1,7 @@
 package me.m0dii.bombs.events;
 
 import me.m0dii.bombs.Bomb;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -15,12 +16,14 @@ public class BombThrowEvent extends Event implements Cancellable
     private final Bomb bomb;
     private final Player player;
     private final ItemStack item;
+    private final Location initialLocation;
     
-    public BombThrowEvent(Player player, Bomb bomb, ItemStack item)
+    public BombThrowEvent(Player player, Bomb bomb, ItemStack item, Location loc)
     {
         this.player = player;
         this.bomb = bomb;
         this.item = item;
+        this.initialLocation = loc;
     }
     
     @Override
@@ -59,5 +62,10 @@ public class BombThrowEvent extends Event implements Cancellable
     public ItemStack getItem()
     {
         return item;
+    }
+    
+    public Location getInitialLocation()
+    {
+        return initialLocation;
     }
 }

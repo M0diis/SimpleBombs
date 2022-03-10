@@ -1,5 +1,6 @@
 package me.m0dii.bombs;
 
+import me.m0dii.bombs.utils.BombType;
 import me.m0dii.bombs.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -9,7 +10,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Bomb
 {
@@ -17,7 +20,7 @@ public class Bomb
     
     private final String permission;
     
-    private final String name;
+    private String name;
     private final Material material;
     private final List<String> lore;
     
@@ -32,6 +35,10 @@ public class Bomb
     private boolean destroyLiquids;
     private int entityDamage;
     private boolean glowing;
+    
+    private BombType type;
+    
+    private final Map<String, String> customProperties = new HashMap<>();
     
     public Bomb(int id, String name, Material material, List<String> lore, double throwStrength, int radius, int fortune,
                 int time,
@@ -49,11 +56,35 @@ public class Bomb
         this.fortune = fortune;
         this.time = time;
         this.throwStrength = throwStrength;
+        
+        this.type = BombType.BASIC;
+    }
+    
+    public Bomb copy()
+    {
+        Bomb copy = new Bomb(id, name, material, new ArrayList<>(lore), throwStrength, radius, fortune, time, permission);
+        copy.setHologramText(hologramText);
+        copy.setEffect(effect.name());
+        copy.setDestroyLiquids(destroyLiquids);
+        copy.setDamage(entityDamage);
+        copy.setGlowing(glowing);
+        copy.setBombType(type);
+        return copy;
     }
     
     public void setHologramText(String text)
     {
         this.hologramText = text;
+    }
+    
+    public void addProperty(String key, String value)
+    {
+        customProperties.put(key, value);
+    }
+    
+    public String getProperty(String key)
+    {
+        return customProperties.get(key);
     }
     
     public void setEffect(String name)
@@ -180,5 +211,20 @@ public class Bomb
     public void setGlowing(boolean glowing)
     {
         this.glowing = glowing;
+    }
+    
+    public void setBombType(BombType type)
+    {
+        this.type = type;
+    }
+    
+    public BombType getBombType()
+    {
+        return type;
+    }
+    
+    public void setName(String name)
+    {
+        this.name = name;
     }
 }

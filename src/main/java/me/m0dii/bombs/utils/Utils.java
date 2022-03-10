@@ -144,18 +144,17 @@ public class Utils
     
     public static double round(double value, int places)
     {
-        if (places < 0)
-            throw new IllegalArgumentException();
+        if (places < 0) throw new IllegalArgumentException();
+        
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
+        
         return bd.doubleValue();
     }
     
-    public static Hologram createHologram(Location loc, int bombID)
+    public static Hologram createHologram(Location loc, Bomb bomb)
     {
         Hologram gram = HologramsAPI.createHologram(SimpleBombs.getInstance(), loc.clone().add(0.0D, 1.0D, 0.0D));
-        
-        Bomb bomb = SimpleBombs.getInstance().getBomb(bombID);
         
         String text = bomb.getHologramText().replace("%time%", bomb.getTime() + "");
         
@@ -163,7 +162,7 @@ public class Utils
         
         holograms.add(gram);
         
-        BombTime time = new BombTime(bombID, bomb.getTime());
+        BombTime time = new BombTime(bomb.getId(), bomb.getTime());
         
         hologramTime.put(gram, time);
         

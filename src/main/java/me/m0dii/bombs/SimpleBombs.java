@@ -7,6 +7,7 @@ import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import me.m0dii.bombs.events.EventListener;
+import me.m0dii.bombs.utils.BombType;
 import me.m0dii.bombs.utils.UpdateChecker;
 import me.m0dii.bombs.utils.Utils;
 import org.bstats.bukkit.Metrics;
@@ -55,7 +56,7 @@ public class SimpleBombs extends JavaPlugin
         
         generateBombs();
         
-        // checkForUpdates();
+        checkForUpdates();
         
         setupMetrics();
     }
@@ -67,7 +68,7 @@ public class SimpleBombs extends JavaPlugin
     
     private void checkForUpdates()
     {
-        new UpdateChecker(this, 12345).getVersion(ver ->
+        new UpdateChecker(this, 100596).getVersion(ver ->
         {
             if (!this.getDescription().getVersion().equalsIgnoreCase(ver))
             {
@@ -97,6 +98,7 @@ public class SimpleBombs extends JavaPlugin
         }
         
         FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
+        
         try
         {
             StateFlag flag = new StateFlag("simple-bombs-explode", false);
@@ -156,9 +158,44 @@ public class SimpleBombs extends JavaPlugin
                 bomb.setDamage(entityDamage);
                 bomb.setGlowing(glowing);
                 
+                handleCustomProperties(sec, key, bomb);
+                
                 bombs.put(id, bomb);
             }
         }
+    }
+    
+    private Bomb handleCustomProperties(ConfigurationSection sec, String key, Bomb bomb)
+    {
+        if(sec == null || !sec.contains(key + ".custom"))
+        {
+            return bomb;
+        }
+       
+        if(sec.contains(key + ".custom"))
+        {
+            String type = sec.getString(key + ".custom.explosion-type");
+            
+            if(type == null)
+            {
+                return bomb;
+            }
+            
+            if(type.equalsIgnoreCase("scatter"))
+            {
+                bomb.setBombType(BombType.SCATTER);
+                
+                String bombType = sec.getString(key + ".custom.bomb-type");
+                String amount = sec.getString(key + ".custom.amount");
+                
+                bomb.addProperty("bomb-type", bombType);
+                bomb.addProperty("amount", amount);
+                
+                return bomb;
+            }
+        }
+        
+        return bomb;
     }
     
     private void scheduleTasks()
