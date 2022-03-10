@@ -1,37 +1,45 @@
 config-reloaded: '&aReloaded the config!'
 explosion-message: '&aYou have set a tier %tier% prison bomb off!'
-no-permission-command: '&aYou do not have the right permission for this command!'
-no-permission-bomb: '&aYou do not have the right permission for this bomb!'
-bomb-received: '&aYou have received a tier %tier% prison bomb (x%amount%)!'
-usage: '&aTry using /bomb give <player> <bombID> | or /bomb reload'
-invalid-player: '&aThis player is not valid! Check spelling!'
-invalid-bomb-id: '&aThis bomb ID is not valid, check your config file!'
+no-permission-command: '&aYou do not have the right permission for this command.'
+no-permission-bomb: '&aYou do not have the right permission for this bomb.'
+bomb-received: '&aYou have received a tier &2%tier% &aprison bomb (x%amount%).'
+invalid-player: '&aPlayer was not found.'
+invalid-bomb-id: '&aThis bomb ID is not valid.'
+usage: |
+  &a /bomb give <player> <bombID> [amount] &8- &7give a player a bomb.
+  &a /bomb reload &8- &7reload the config.
 
 bombs:
-  1:
+  1: # ID
     name: '&aBomb &f&l1'
     material: FIRE_CHARGE
+    glowing: true
     lore:
       - '&cRight click this to throw it!'
-      - '&aThis bomb does a tier 1 explosion!'
-    fortune: 1 # How many times the drops will be doubled.
+      - '&aThis bomb has radius of &2%radius%&a blocks.'
+    # Additionally, you can use these placeholders:
+    # %radius% - The radius of the bomb.
+    # %amount% - The amount of the bomb.
+    # %fortune% - The fortune level of the bomb.
+    # %damage% - The damage of the bomb.
+    fortune: 1 # How many times the drops will be doubled. (1 = normal, 2 = double, 3 = triple, etc.)
     radius: 3 # Item drops increases by 2.5 for every broken block.
-    permission: 'bombs.1' # Without this permission, the player won't be able to use this bomb.
+    permission: 'simplebombs.tier.1' # Without this permission, the player won't be able to use this bomb.
     detonation-time: 1 # Time before detonation.
-    detonation-text: '&c&l! %time%'
+    detonation-text: '&c&l! %time%' # What will be shown above the bomb before it explodes.
     throw-strength: 1.5
-    effect: 'EXPLOSION_LARGE'
+    effect: 'EXPLOSION_LARGE' # Particle list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
     destroy-liquids: true
     entity-damage: 1 # Hearts of damage.
   2:
     name: '&aBomb &f&l2'
     material: FIRE_CHARGE
+    glowing: true
     lore:
       - '&cRight click this to throw it.'
-      - '&aThis bomb does a tier 2 explosion!'
     fortune: 2
     radius: 5
-    permission: 'bombs.2'
+    permission: 'simplebombs.tier.2'
     detonation-time: 2
     detonation-text: '&c&l! %time%'
     throw-strength: 1.5

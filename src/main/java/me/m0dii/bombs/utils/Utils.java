@@ -1,14 +1,16 @@
-package me.m0dii.bombs;
+package me.m0dii.bombs.utils;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
+import me.m0dii.bombs.Bomb;
+import me.m0dii.bombs.BombTime;
+import me.m0dii.bombs.SimpleBombs;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -18,36 +20,43 @@ import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class Utils
 {
-    public static String format(String string)
+    private static final Pattern HEX_PATTERN = Pattern.compile("#([A-Fa-f0-9])([A-Fa-f0-9])([A-Fa-f0-9])([A-Fa-f0-9])([A-Fa-f0-9])([A-Fa-f0-9])");
+    
+    public static String format(String text)
     {
-        return ChatColor.translateAlternateColorCodes('&', string);
+        if(text == null || text.isEmpty())
+            return "";
+        
+        return ChatColor.translateAlternateColorCodes('&', HEX_PATTERN.matcher(text).replaceAll("&x&$1&$2&$3&$4&$5&$6"));
     }
     
-    private static boolean isWorldGuardExplodeable(Location loc)
+    private static boolean canExplodeWorldGuard(Location loc)
     {
+        if(Bukkit.getPluginManager().getPlugin("WorldGuard") == null)
+        {
+            return true;
+        }
+        
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
         RegionQuery query = container.createQuery();
         ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(loc));
     
-        return set.queryValue(null, Flags.BLOCK_BREAK) == StateFlag.State.ALLOW;
-    }
-    
-    public static boolean isExplodeable(Location paramLocation)
-    {
-        if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null)
-        {
-            return isWorldGuardExplodeable(paramLocation);
-        }
-        
-        return true;
+        return set.queryValue(null, SimpleBombs.WG_BOMBS) == StateFlag.State.ALLOW;
     }
     
     public static int max()
@@ -116,7 +125,7 @@ public class Utils
                     Block block = center.getWorld().getBlockAt(
                             X + center.getBlockX(), Y + center.getBlockY(), Z + center.getBlockZ());
     
-                    if (isExplodeable(block.getLocation()))
+                    if (canExplodeWorldGuard(block.getLocation()))
                     {
                         blocks.add(block);
                     }
@@ -126,8 +135,6 @@ public class Utils
         
         return blocks;
     }
-    
-
     
     public static HashMap<Hologram, BombTime> hologramTime = new HashMap<>();
     
@@ -180,5 +187,37 @@ public class Utils
         hologramTime.remove(gram);
         hologramItem.remove(gram);
         gram.delete();
+    }
+    
+    public static void logToFile(String file, String text)
+    {
+        try
+        {
+            File logFolder = SimpleBombs.getInstance().getDataFolder();
+            
+            if(!logFolder.exists())
+            {
+                logFolder.mkdir();
+            }
+            
+            File saveTo = new File(SimpleBombs.getInstance().getDataFolder(), file);
+            
+            if (!saveTo.exists())
+            {
+                saveTo.createNewFile();
+            }
+            
+            FileWriter fw = new FileWriter(saveTo, true);
+            PrintWriter pw = new PrintWriter(fw);
+
+            pw.println("[" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "] " + text.trim());
+            
+            pw.flush();
+            pw.close();
+        }
+        catch(IOException ex)
+        {
+            ex.printStackTrace();
+        }
     }
 }

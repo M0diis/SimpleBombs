@@ -1,7 +1,10 @@
 package me.m0dii.bombs;
 
+import me.m0dii.bombs.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -28,6 +31,7 @@ public class Bomb
     private Particle effect;
     private boolean destroyLiquids;
     private int entityDamage;
+    private boolean glowing;
     
     public Bomb(int id, String name, Material material, List<String> lore, double throwStrength, int radius, int fortune,
                 int time,
@@ -91,7 +95,22 @@ public class Bomb
             
             for(String s : lore)
             {
-                newLore.add(Utils.format(s));
+                String newLine = Utils.format(s);
+                
+                newLine = newLine
+                        .replaceAll("%radius%", String.valueOf(radius))
+                        .replaceAll("%damage%", String.valueOf(entityDamage))
+                        .replaceAll("%time%", String.valueOf(time))
+                        .replaceAll("%throw_strength%", String.valueOf(throwStrength))
+                        .replaceAll("%fortune%", String.valueOf(fortune));
+                
+                newLore.add(newLine);
+            }
+            
+            if(glowing)
+            {
+                meta.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             }
             
             meta.setLore(newLore);
@@ -155,5 +174,10 @@ public class Bomb
     public int getEntityDamage()
     {
         return entityDamage;
+    }
+    
+    public void setGlowing(boolean glowing)
+    {
+        this.glowing = glowing;
     }
 }

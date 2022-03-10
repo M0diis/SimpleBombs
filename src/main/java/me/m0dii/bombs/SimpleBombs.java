@@ -1,6 +1,16 @@
 package me.m0dii.bombs;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.Flag;
+import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
+import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
+import me.m0dii.bombs.events.EventListener;
+import me.m0dii.bombs.utils.UpdateChecker;
+import me.m0dii.bombs.utils.Utils;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -44,6 +54,64 @@ public class SimpleBombs extends JavaPlugin
         scheduleTasks();
         
         generateBombs();
+        
+        // checkForUpdates();
+        
+        setupMetrics();
+    }
+    
+    public void onLoad()
+    {
+        registerWorldGuardFlags();
+    }
+    
+    private void checkForUpdates()
+    {
+        new UpdateChecker(this, 12345).getVersion(ver ->
+        {
+            if (!this.getDescription().getVersion().equalsIgnoreCase(ver))
+            {
+                getLogger().info("You are running an outdated version of SRV-Cron.");
+                getLogger().info("You are using: " + getDescription().getVersion() + ".");
+                getLogger().info("Latest version: " + ver + ".");
+                getLogger().info("You can download the latest version on Spigot:");
+                getLogger().info("https://www.spigotmc.org/resources/100382/");
+            }
+        });
+    }
+    
+    private void setupMetrics()
+    {
+        Metrics metrics = new Metrics(this, 14582);
+        
+        metrics.addCustomChart(new SingleLineChart("managing_bombs", bombs::size));
+    }
+    
+    public static StateFlag WG_BOMBS;
+    
+    private void registerWorldGuardFlags()
+    {
+        if(Bukkit.getPluginManager().getPlugin("WorldGuard") == null)
+        {
+            return;
+        }
+        
+        FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
+        try
+        {
+            StateFlag flag = new StateFlag("simple-bombs-explode", false);
+            registry.register(flag);
+            WG_BOMBS = flag;
+        }
+        catch (FlagConflictException e)
+        {
+            Flag<?> existing = registry.get("simple-bombs-explode");
+            
+            if (existing instanceof StateFlag)
+            {
+                WG_BOMBS = (StateFlag) existing;
+            }
+        }
     }
     
     public void generateBombs()
@@ -59,22 +127,24 @@ public class SimpleBombs extends JavaPlugin
                 int id = Integer.parseInt(key);
                 
                 String name = sec.getString(key + ".name");
-                Material material = Material.getMaterial(sec.getString(key + ".material"));
+                Material material = Material.getMaterial(sec.getString(key + ".material", "FIRE_CHARGE"));
                 
-                int radius = sec.getInt(key + ".radius");
-                int fortune = sec.getInt(key + ".fortune");
+                int radius = sec.getInt(key + ".radius", 3);
+                int fortune = sec.getInt(key + ".fortune", 1);
                 
-                int time = sec.getInt(key + ".detonation-time");
-                String effect = sec.getString(key + ".effect");
-                String permission = sec.getString(key + ".permission");
+                int time = sec.getInt(key + ".detonation-time", 3);
+                String effect = sec.getString(key + ".effect", "LARGE_EXPLOSION");
+                String permission = sec.getString(key + ".permission", "simplebombs.bomb." + id);
                 
                 List<String> lore = sec.getStringList(key + ".lore");
                 
-                String hologram = sec.getString(key + ".detonation-text");
+                String hologram = sec.getString(key + ".detonation-text", "&f&l%time%");
                 
-                double throwStrength = sec.getDouble(key + ".throw-strength");
+                double throwStrength = sec.getDouble(key + ".throw-strength", 1.5D);
                 
-                boolean destroyLiquids = sec.getBoolean(key + ".destroy-liquids");
+                boolean destroyLiquids = sec.getBoolean(key + ".destroy-liquids", false);
+                
+                boolean glowing = sec.getBoolean(key + ".glowing", false);
                 
                 int entityDamage = sec.getInt(key + ".entity-damage");
                 
@@ -84,6 +154,7 @@ public class SimpleBombs extends JavaPlugin
                 bomb.setHologramText(hologram);
                 bomb.setDestroyLiquids(destroyLiquids);
                 bomb.setDamage(entityDamage);
+                bomb.setGlowing(glowing);
                 
                 bombs.put(id, bomb);
             }

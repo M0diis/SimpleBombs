@@ -1,5 +1,6 @@
 package me.m0dii.bombs;
 
+import me.m0dii.bombs.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
