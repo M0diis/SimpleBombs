@@ -4,7 +4,6 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
-import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import me.m0dii.bombs.events.EventListener;
 import me.m0dii.bombs.utils.BombType;
@@ -105,7 +104,7 @@ public class SimpleBombs extends JavaPlugin
             registry.register(flag);
             WG_BOMBS = flag;
         }
-        catch (FlagConflictException e)
+        catch (Exception ex)
         {
             Flag<?> existing = registry.get("simple-bombs-explode");
             
@@ -150,6 +149,9 @@ public class SimpleBombs extends JavaPlugin
                 
                 int entityDamage = sec.getInt(key + ".entity-damage");
                 
+                String throwSound = sec.getString(key + ".sound.throw", "ENTITY.ARROW.SHOOT");
+                String explodeSound = sec.getString(key + ".sound.explode", "ENTITY.GENERIC.EXPLODE");
+
                 Bomb bomb = new Bomb(id, name, material, lore, throwStrength, radius, fortune, time, permission);
                 
                 bomb.clearProperties();
@@ -159,6 +161,8 @@ public class SimpleBombs extends JavaPlugin
                 bomb.setDestroyLiquids(destroyLiquids);
                 bomb.setDamage(entityDamage);
                 bomb.setGlowing(glowing);
+                bomb.setExplodeSound(throwSound);
+                bomb.setThrowSound(explodeSound);
                 
                 if(sec.contains(key + ".destroy"))
                 {
@@ -186,8 +190,6 @@ public class SimpleBombs extends JavaPlugin
         
         if(sec.contains(key + ".custom"))
         {
-            System.out.println("[SimpleBombs] Found custom properties for bomb " + key);
-            
             String type = sec.getString(key + ".custom.explosion-type");
             
             if(type == null)

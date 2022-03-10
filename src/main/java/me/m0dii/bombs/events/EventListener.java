@@ -8,6 +8,7 @@ import me.m0dii.bombs.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
@@ -189,6 +190,13 @@ public class EventListener implements Listener
         Bomb bomb = event.getBomb();
         ItemStack item = event.getItem();
         Location loc = event.getInitialLocation();
+
+        Sound throwSound = bomb.getThrowSound();
+
+        if(throwSound != null)
+        {
+            p.playSound(loc, throwSound, 1, 1);
+        }
         
         used.add(p);
     
@@ -252,6 +260,13 @@ public class EventListener implements Listener
         Bomb bomb = event.getBomb();
         Player player = event.getPlayer();
         Location loc = event.getExplodeLoc();
+
+        Sound explodeSound = bomb.getThrowSound();
+
+        if(explodeSound != null)
+        {
+            player.playSound(loc, explodeSound, 1, 1);
+        }
         
         List<Block> explodedBlocks = Utils.getCylinder(loc, bomb.getRadius());
     

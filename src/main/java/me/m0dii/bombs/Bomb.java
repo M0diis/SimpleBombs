@@ -4,6 +4,7 @@ import me.m0dii.bombs.utils.BombType;
 import me.m0dii.bombs.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -32,6 +33,9 @@ public class Bomb
     private String hologramText;
     
     private Particle effect;
+    private Sound throwSound = null;
+    private Sound explodeSound = null;
+
     private boolean destroyLiquids;
     private int entityDamage;
     private boolean glowing;
@@ -153,6 +157,16 @@ public class Bomb
     {
         this.effect = Particle.valueOf(name);
     }
+
+    public void setExplodeSound(String name)
+    {
+        this.explodeSound = Sound.valueOf(name);
+    }
+
+    public void setThrowSound(String name)
+    {
+        this.throwSound = Sound.valueOf(name);
+    }
     
     public int getId()
     {
@@ -233,6 +247,16 @@ public class Bomb
     public Particle getEffect()
     {
         return effect;
+    }
+
+    public Sound getExplodeSound()
+    {
+        return explodeSound;
+    }
+
+    public Sound getThrowSound()
+    {
+        return throwSound;
     }
     
     public String getPermission()
