@@ -77,7 +77,7 @@ bombs:
     throw-strength: 1
     effect: 'EXPLOSION_LARGE'
     sound: 
-      throw: 'ENTITY.ARROW.SHOOT'
-      explode: 'ENTITY.GENERIC.EXPLODE'
+      throw: 'ENTITY_ARROW_SHOOT'
+      explode: 'ENTITY_GENERIC_EXPLODE'
     destroy-liquids: true
     entity-damage: 1
