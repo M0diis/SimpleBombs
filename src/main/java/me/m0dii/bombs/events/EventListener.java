@@ -291,7 +291,7 @@ public class EventListener implements Listener
                 
                 Location newLoc = loc.clone();
                 
-                newLoc.setDirection(newLoc.getDirection().multiply(new Random().nextDouble() + 5.5));
+                newLoc.setDirection(getRandomDirection());
     
                 copy.setName(bomb.getName() + " " + i);
                 
@@ -301,5 +301,14 @@ public class EventListener implements Listener
     
         player.sendMessage(Utils.format(plugin.getConfig().getString("explosion-message").replace("%tier%",
                 bomb.getId() + "")));
+    }
+    
+    private Vector getRandomDirection()
+    {
+        Vector direction = new Vector();
+        direction.setX(Math.random()*2-1d);
+        direction.setY(Math.random()-0.5d);
+        direction.setZ(Math.random()*2-1d);
+        return direction.normalize();
     }
 }
