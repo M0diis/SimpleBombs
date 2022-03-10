@@ -39,9 +39,12 @@ public class Bomb
     private BombType type;
     
     private final Map<String, String> customProperties = new HashMap<>();
+    private final List<String> checkedBlocks = new ArrayList<>();
     
     private boolean ignorePerm;
     private boolean sendMessage;
+    
+    private boolean destroyIsWhitelist;
     
     public Bomb(int id, String name, Material material, List<String> lore, double throwStrength, int radius, int fortune,
                 int time,
@@ -61,6 +64,34 @@ public class Bomb
         this.throwStrength = throwStrength;
         
         this.type = BombType.BASIC;
+        
+        this.destroyIsWhitelist = false;
+    }
+    
+    public void setDestroyIsWhitelist(boolean destroyIsWhitelist)
+    {
+        this.destroyIsWhitelist = destroyIsWhitelist;
+    }
+    
+    public boolean destroyIsWhitelist()
+    {
+        return destroyIsWhitelist;
+    }
+    
+    public boolean containsCheckedBlock(String block)
+    {
+        return checkedBlocks.contains(block);
+    }
+    
+    public boolean hasCheckedBlocks()
+    {
+        return !checkedBlocks.isEmpty();
+    }
+    
+    public void setCheckedBlocks(List<String> blocks)
+    {
+        this.checkedBlocks.clear();
+        this.checkedBlocks.addAll(blocks);
     }
     
     public Bomb copy()
@@ -72,6 +103,9 @@ public class Bomb
         copy.setDamage(entityDamage);
         copy.setGlowing(glowing);
         copy.setBombType(type);
+        copy.setDestroyIsWhitelist(destroyIsWhitelist);
+        copy.setCheckedBlocks(checkedBlocks);
+        copy.setSendMessage(sendMessage);
         return copy;
     }
     
@@ -85,7 +119,7 @@ public class Bomb
         this.ignorePerm = ignorePerm;
     }
     
-    public boolean doIgnorePermission()
+    public boolean ignorePermission()
     {
         return ignorePerm;
     }
@@ -108,6 +142,11 @@ public class Bomb
     public String getProperty(String key)
     {
         return customProperties.get(key);
+    }
+    
+    public void clearProperties()
+    {
+        customProperties.clear();
     }
     
     public void setEffect(String name)

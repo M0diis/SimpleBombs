@@ -152,13 +152,25 @@ public class SimpleBombs extends JavaPlugin
                 
                 Bomb bomb = new Bomb(id, name, material, lore, throwStrength, radius, fortune, time, permission);
                 
+                bomb.clearProperties();
+                
                 bomb.setEffect(effect);
                 bomb.setHologramText(hologram);
                 bomb.setDestroyLiquids(destroyLiquids);
                 bomb.setDamage(entityDamage);
                 bomb.setGlowing(glowing);
                 
-                handleCustomProperties(sec, key, bomb);
+                if(sec.contains(key + ".destroy"))
+                {
+                    List<String> blocks = sec.getStringList(key + ".destroy.blocks");
+                    
+                    boolean whitelist = sec.getBoolean(key + ".destroy.whitelist", true);
+                    
+                    bomb.setDestroyIsWhitelist(whitelist);
+                    bomb.setCheckedBlocks(blocks);
+                }
+                
+                bomb = handleCustomProperties(sec, key, bomb);
                 
                 bombs.put(id, bomb);
             }
@@ -167,13 +179,15 @@ public class SimpleBombs extends JavaPlugin
     
     private Bomb handleCustomProperties(ConfigurationSection sec, String key, Bomb bomb)
     {
-        if(sec == null || !sec.contains(key + ".custom"))
+        if(sec == null || !sec.contains(key + ".custom", true))
         {
             return bomb;
         }
-       
+        
         if(sec.contains(key + ".custom"))
         {
+            System.out.println("[SimpleBombs] Found custom properties for bomb " + key);
+            
             String type = sec.getString(key + ".custom.explosion-type");
             
             if(type == null)
@@ -183,18 +197,18 @@ public class SimpleBombs extends JavaPlugin
             
             if(type.equalsIgnoreCase("scatter"))
             {
-                bomb.setBombType(BombType.SCATTER);
-                
                 String bombType = sec.getString(key + ".custom.bomb-type");
                 String amount = sec.getString(key + ".custom.amount");
-                
+    
+                bomb.setBombType(BombType.SCATTER);
+
                 bomb.addProperty("bomb-type", bombType);
                 bomb.addProperty("amount", amount);
-                
+    
                 return bomb;
             }
         }
-        
+    
         return bomb;
     }
     

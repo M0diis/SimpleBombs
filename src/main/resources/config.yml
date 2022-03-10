@@ -31,6 +31,13 @@ bombs:
     effect: 'EXPLOSION_LARGE' # Particle list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
     destroy-liquids: true
     entity-damage: 0 # Hearts of damage.
+    destroy:
+      # If true, only items in the whitelist will be destroyed.
+      # If false, all items NOT in the list will be destroyed.
+      whitelist: true
+      blocks:
+        - 'STONE'
+        - 'COBBLESTONE'
   2:
     name: '&aBomb &f&l2'
     material: FIRE_CHARGE
@@ -38,14 +45,14 @@ bombs:
     lore:
       - '&cRight click this to throw it.'
     fortune: 2
-    radius: 5
+    radius: 2
     permission: 'simplebombs.tier.2'
     detonation-time: 2
     detonation-text: '&c&l! %time%'
     throw-strength: 2
     effect: 'EXPLOSION_LARGE'
     destroy-liquids: true
-    entity-damage: 1
+    entity-damage: 0
     custom:
       explosion-type: 'SCATTER' # Scatter will spread the explosion in a circle.
       bomb-type: 3 # The bomb type that will be used.
@@ -57,11 +64,11 @@ bombs:
     lore:
       - '&cRight click this to throw it.'
     fortune: 1
-    radius: 1
+    radius: 2
     permission: 'simplebombs.tier.3'
     detonation-time: 2
     detonation-text: '&c&l! %time%'
-    throw-strength: 5
+    throw-strength: 1
     effect: 'EXPLOSION_LARGE'
     destroy-liquids: true
     entity-damage: 1

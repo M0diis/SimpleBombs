@@ -16,8 +16,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
@@ -63,19 +63,22 @@ public class EventListener implements Listener
         }
         
         Bomb bomb = plugin.getBomb(Utils.getBombID(item.getItemMeta().getDisplayName()));
-    
-        if(bomb.doIgnorePermission() && !p.hasPermission(bomb.getPermission()))
+
+        if(!bomb.ignorePermission())
         {
-            p.sendMessage(Utils.format(plugin.getConfig().getString("no-permission-bomb")));
-            
-            return;
+            if(!p.hasPermission(bomb.getPermission()))
+            {
+                p.sendMessage(Utils.format(plugin.getConfig().getString("no-permission-bomb")));
+        
+                return;
+            }
         }
         
         Bukkit.getPluginManager().callEvent(new BombThrowEvent(p, bomb, item, p.getLocation()));
     }
     
     @EventHandler
-    public void pickup(PlayerAttemptPickupItemEvent e)
+    public void pickup(PlayerPickupItemEvent e)
     {
         if (droppedItems.contains(e.getItem()))
         {
@@ -259,15 +262,29 @@ public class EventListener implements Listener
             if(!bomb.doDestroyLiquids())
             {
                 String name = b.getType().name().toUpperCase();
-            
+        
                 if(name.contains("WATER") || name.contains("LAVA")
-                || b.getType().equals(Material.BEDROCK))
+                        || b.getType().equals(Material.BEDROCK))
                 {
                     continue;
                 }
             }
-        
-            b.setType(Material.AIR);
+            
+            if(bomb.hasCheckedBlocks())
+            {
+                if(bomb.destroyIsWhitelist() && bomb.containsCheckedBlock(b.getType().name().toUpperCase()))
+                {
+                    b.setType(Material.AIR);
+                }
+                else if(!bomb.destroyIsWhitelist() && !bomb.containsCheckedBlock(b.getType().name().toUpperCase()))
+                {
+                    b.setType(Material.AIR);
+                }
+            }
+            else
+            {
+                b.setType(Material.AIR);
+            }
         }
     
         if(bomb.getEntityDamage() != 0)
@@ -294,6 +311,7 @@ public class EventListener implements Listener
                 newLoc.setDirection(getRandomDirection());
     
                 copy.setName(bomb.getName() + " " + i);
+                
                 copy.setIgnorePerm(true);
                 copy.setSendMessage(false);
                 
