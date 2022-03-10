@@ -261,7 +261,7 @@ public class EventListener implements Listener
         Player player = event.getPlayer();
         Location loc = event.getExplodeLoc();
 
-        Sound explodeSound = bomb.getThrowSound();
+        Sound explodeSound = bomb.getExplodeSound();
 
         if(explodeSound != null)
         {

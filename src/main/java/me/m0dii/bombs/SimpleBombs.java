@@ -161,8 +161,8 @@ public class SimpleBombs extends JavaPlugin
                 bomb.setDestroyLiquids(destroyLiquids);
                 bomb.setDamage(entityDamage);
                 bomb.setGlowing(glowing);
-                bomb.setExplodeSound(throwSound);
-                bomb.setThrowSound(explodeSound);
+                bomb.setExplodeSound(explodeSound);
+                bomb.setThrowSound(throwSound);
                 
                 if(sec.contains(key + ".destroy"))
                 {
