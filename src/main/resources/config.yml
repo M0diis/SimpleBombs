@@ -33,6 +33,11 @@ bombs:
       throw: 'ENTITY_ARROW_SHOOT'
       explode: 'ENTITY_GENERIC_EXPLODE'
     destroy-liquids: true
+    smelt: 
+      enable: true
+      whitelist: true
+      blocks: 
+      - 'IRON_ORE'
     entity-damage: 0 # Hearts of damage.
     destroy:
       # If true, only items in the whitelist will be destroyed.
@@ -58,6 +63,11 @@ bombs:
       throw: 'ENTITY_ARROW_SHOOT'
       explode: 'ENTITY_GENERIC_EXPLODE'
     destroy-liquids: true
+    smelt: 
+      enable: true
+      whitelist: true
+      blocks: 
+      - 'IRON_ORE'
     entity-damage: 0
     custom:
       explosion-type: 'SCATTER' # Scatter will spread the explosion in a circle.
@@ -80,4 +90,9 @@ bombs:
       throw: 'ENTITY_ARROW_SHOOT'
       explode: 'ENTITY_GENERIC_EXPLODE'
     destroy-liquids: true
+    smelt: 
+      enable: true
+      whitelist: true
+      blocks: 
+      - 'IRON_ORE'
     entity-damage: 1

@@ -44,11 +44,14 @@ public class Bomb
     
     private final Map<String, String> customProperties = new HashMap<>();
     private final List<String> checkedBlocks = new ArrayList<>();
-    
+    private final List<String> smeltBlocks = new ArrayList<>();
+
     private boolean ignorePerm;
     private boolean sendMessage;
     
     private boolean destroyIsWhitelist;
+    private boolean smeltIsWhitelist;
+    private boolean smeltIsEnabled;
     
     public Bomb(int id, String name, Material material, List<String> lore, double throwStrength, int radius, int fortune,
                 int time,
@@ -72,14 +75,39 @@ public class Bomb
         this.destroyIsWhitelist = false;
     }
     
-    public void setDestroyIsWhitelist(boolean destroyIsWhitelist)
+    public void setDestroyIsWhitelist(boolean whitelist)
     {
-        this.destroyIsWhitelist = destroyIsWhitelist;
+        this.destroyIsWhitelist = whitelist;
+    }
+
+    public void setSmeltEnabled(boolean smelt)
+    {
+        this.smeltIsEnabled = smelt;
     }
     
+    public boolean isSmeltEnabled()
+    {
+        return smeltIsEnabled;
+    }
+
     public boolean destroyIsWhitelist()
     {
         return destroyIsWhitelist;
+    }
+    
+    public void setSmeltIsWhitelist(boolean whitelist)
+    {
+        this.smeltIsWhitelist = whitelist;
+    }
+    
+    public boolean smeltIsWhitelist()
+    {
+        return smeltIsWhitelist;
+    }
+
+    public boolean containsSmeltBlock(String block)
+    {
+        return smeltBlocks.contains(block);
     }
     
     public boolean containsCheckedBlock(String block)
@@ -96,6 +124,12 @@ public class Bomb
     {
         this.checkedBlocks.clear();
         this.checkedBlocks.addAll(blocks);
+    }
+    
+    public void setSmeltBlocks(List<String> blocks)
+    {
+        this.smeltBlocks.clear();
+        this.smeltBlocks.addAll(blocks);
     }
     
     public Bomb copy()

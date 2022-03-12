@@ -164,7 +164,7 @@ public class SimpleBombs extends JavaPlugin
                 bomb.setExplodeSound(explodeSound);
                 bomb.setThrowSound(throwSound);
                 
-                if(sec.contains(key + ".destroy"))
+                if(sec.contains(key + ".destroy", true))
                 {
                     List<String> blocks = sec.getStringList(key + ".destroy.blocks");
                     
@@ -172,6 +172,18 @@ public class SimpleBombs extends JavaPlugin
                     
                     bomb.setDestroyIsWhitelist(whitelist);
                     bomb.setCheckedBlocks(blocks);
+                }
+
+                if(sec.contains(key + "smelt", true))
+                {
+                    List<String> blocks = sec.getStringList(key + ".smelt.blocks");
+                    
+                    boolean whitelist = sec.getBoolean(key + ".smelt.whitelist", false);
+                    boolean enabled = sec.getBoolean(key + ".smelt.enabled", true);
+
+                    bomb.setSmeltIsWhitelist(whitelist);
+                    bomb.setSmeltBlocks(blocks);
+                    bomb.setSmeltEnabled(enabled);
                 }
                 
                 bomb = handleCustomProperties(sec, key, bomb);

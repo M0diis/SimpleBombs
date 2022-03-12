@@ -17,14 +17,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 public class EventListener implements Listener
@@ -79,7 +82,7 @@ public class EventListener implements Listener
     }
     
     @EventHandler
-    public void pickup(PlayerPickupItemEvent e)
+    public void onItemPickup(EntityPickupItemEvent e)
     {
         if (droppedItems.contains(e.getItem()))
         {
@@ -87,7 +90,7 @@ public class EventListener implements Listener
         }
     }
     
-    private void applyBlocksFortune(Player p, int fortune, List<Block> blocks)
+    private void applyBlocksFortune(Player p, Bomb bomb, List<Block> blocks)
     {
         HashMap<String, Integer> stuff = new HashMap<>();
         ArrayList<String> brokenBlocks = new ArrayList<>();
@@ -103,7 +106,7 @@ public class EventListener implements Listener
                     if(!brokenBlocks.contains(type.name()))
                     {
                         brokenBlocks.add(type.name());
-                        stuff.put(type.name(), fortune);
+                        stuff.put(type.name(), bomb.getFortune());
         
                         continue;
                     }
@@ -111,7 +114,7 @@ public class EventListener implements Listener
                     int al = stuff.get(type.name());
     
                     stuff.remove(type.name());
-                    stuff.put(type.name(), al + fortune);
+                    stuff.put(type.name(), al + bomb.getFortune());
                 }
             }
         }
@@ -150,10 +153,34 @@ public class EventListener implements Listener
             {
                 continue;
             }
+
             
             if(amount <= 64)
             {
-                p.getWorld().dropItemNaturally(p.getLocation(), new ItemStack(material, amount));
+                ItemStack item = new ItemStack(material, amount);
+
+                if(bomb.isSmeltEnabled())
+                {
+                    ItemStack result = null;
+                    Iterator<Recipe> iter = Bukkit.recipeIterator();
+                    
+                    while (iter.hasNext()) 
+                    {
+                        Recipe recipe = iter.next();
+
+                        if (!(recipe instanceof FurnaceRecipe)) 
+                            continue;
+
+                        if (((FurnaceRecipe) recipe).getInput().getType() != item.getType()) 
+                            continue;
+
+                       result = recipe.getResult();
+                       break;
+                    }
+                    result.setAmount(item.getAmount());
+                }
+
+                p.getWorld().dropItemNaturally(p.getLocation(), item);
                 continue;
             }
             
@@ -270,7 +297,7 @@ public class EventListener implements Listener
         
         List<Block> explodedBlocks = Utils.getCylinder(loc, bomb.getRadius());
     
-        applyBlocksFortune(player, bomb.getFortune(), explodedBlocks);
+        applyBlocksFortune(player, bomb, explodedBlocks);
     
         for (Block b : explodedBlocks)
         {
