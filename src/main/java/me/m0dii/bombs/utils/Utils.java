@@ -45,6 +45,22 @@ public class Utils
         return ChatColor.translateAlternateColorCodes('&', HEX_PATTERN.matcher(text).replaceAll("&x&$1&$2&$3&$4&$5&$6"));
     }
     
+    public static String stripColor(String text)
+    {
+        return ChatColor.stripColor(format(text));
+    }
+    
+    public static String setPlaceholders(String text, Bomb bomb)
+    {
+         return text.replaceAll("%radius%", String.valueOf(bomb.getRadius()))
+                    .replaceAll("%damage%", String.valueOf(bomb.getEntityDamage()))
+                    .replaceAll("%id%", String.valueOf(bomb.getId()))
+                    .replaceAll("%time%", String.valueOf(bomb.getTime()))
+                    .replaceAll("%name%", String.valueOf(bomb.getName()))
+                    .replaceAll("%throw_strength%", String.valueOf(bomb.getThrowStrength()))
+                    .replaceAll("%fortune%", String.valueOf(bomb.getFortune()));
+    }
+    
     private static boolean canExplodeWorldGuard(Location loc)
     {
         if(Bukkit.getPluginManager().getPlugin("WorldGuard") == null)

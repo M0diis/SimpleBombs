@@ -5,11 +5,15 @@ plugins {
 
 compileJava.options.encoding = 'UTF-8'
 
+sourceCompatibility = 8
+targetCompatibility = 8
+
 group 'me.m0dii'
-version '1.4.0'
+version '1.5.0'
 
 shadowJar {
-    relocate 'org.bstats', 'me.m0dii.bombs'
+    relocate "org.bstats", "me.m0dii.metrics"
+    relocate "dev.triumphteam.gui", "me.m0dii.gui"
 
     archiveFileName = "SimpleBombs-${version}.jar"
 }
@@ -31,7 +35,7 @@ repositories {
     }
 
     maven {
-        url 'https://jitpack.io'
+        url "https://jitpack.io"
     }
 
     maven {
@@ -39,11 +43,11 @@ repositories {
     }
 
     maven {
-        url 'https://papermc.io/repo/repository/maven-public/'
+        url "https://papermc.io/repo/repository/maven-public/"
     }
 
     maven {
-        url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+        url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
     }
 
     maven {
@@ -57,14 +61,18 @@ repositories {
     maven {
         url "https://repo.codemc.io/repository/maven-public/"
     }
+
+    maven {
+        url "https://repo.mattstudios.me/artifactory/public/"
+    }
 }
 
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.16.4-R0.1-SNAPSHOT'
 
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.5'
-
     compileOnly 'com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.4.9'
 
-    implementation "org.bstats:bstats-bukkit:2.2.1"
+    implementation 'org.bstats:bstats-bukkit:3.0.0'
+    implementation "dev.triumphteam:triumph-gui:3.1.2"
 }

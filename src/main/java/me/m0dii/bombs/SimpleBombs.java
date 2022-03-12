@@ -7,6 +7,7 @@ import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import me.m0dii.bombs.bomb.Bomb;
 import me.m0dii.bombs.bomb.BombTime;
+import me.m0dii.bombs.commands.BombCommand;
 import me.m0dii.bombs.events.EventListener;
 import me.m0dii.bombs.utils.Config;
 import me.m0dii.bombs.utils.UpdateChecker;

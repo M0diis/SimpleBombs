@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Bomb
 {
@@ -24,10 +25,10 @@ public class Bomb
     private final Material material;
     private final List<String> lore;
     
-    private int radius;
-    private int fortune;
-    private int time;
-    private double throwStrength;
+    private final int radius;
+    private final int fortune;
+    private final int time;
+    private final double throwStrength;
     
     private String hologramText;
 
@@ -220,10 +221,16 @@ public class Bomb
         return material;
     }
     
-    public List<String> getLore()
+    public List<String> getLore(boolean formatted)
     {
+        if(formatted)
+        {
+            return lore.stream().map(Utils::format).map(s -> Utils.setPlaceholders(s, this)).collect(Collectors.toList());
+        }
+        
         return lore;
     }
+    
     
     public ItemStack getItemStack()
     {
@@ -234,23 +241,6 @@ public class Bomb
         if(meta != null)
         {
             meta.setDisplayName(Utils.format(name));
-            
-            List<String> newLore = new ArrayList<>();
-            
-            for(String s : lore)
-            {
-                String newLine = Utils.format(s);
-                
-                newLine = newLine
-                        .replaceAll("%radius%", String.valueOf(radius))
-                        .replaceAll("%damage%", String.valueOf(entityDamage))
-                        .replaceAll("%time%", String.valueOf(time))
-                        .replaceAll("%throw_strength%", String.valueOf(throwStrength))
-                        .replaceAll("%fortune%", String.valueOf(fortune));
-                
-                newLore.add(newLine);
-            }
-            
             if(glowing)
             {
                 meta.addEnchant(Enchantment.DURABILITY, 1, true);
@@ -258,7 +248,7 @@ public class Bomb
                 meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             }
             
-            meta.setLore(newLore);
+            meta.setLore(getLore(true));
             
             item.setItemMeta(meta);
         }
@@ -349,5 +339,10 @@ public class Bomb
     public void setName(String name)
     {
         this.name = name;
+    }
+    
+    public boolean isGlowing()
+    {
+        return glowing;
     }
 }
