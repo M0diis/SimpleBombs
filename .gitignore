@@ -7,3 +7,4 @@ gradle-app.setting
 /gradle/
 /libs/
 /bin/
+.vscode
