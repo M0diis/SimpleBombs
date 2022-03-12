@@ -31,7 +31,7 @@ public class Bomb
     private double throwStrength;
     
     private String hologramText;
-    
+
     private Particle effect;
     private Sound throwSound = null;
     private Sound explodeSound = null;
