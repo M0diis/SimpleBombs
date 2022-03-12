@@ -7,6 +7,7 @@ invalid-player: '&aPlayer was not found.'
 invalid-bomb-id: '&aThis bomb ID is not valid.'
 usage: |
   &a /bomb give <player> <bombID> [amount] &8- &7give a player a bomb.
+  &a /bomb gui &8- &7open bomb list.
   &a /bomb reload &8- &7reload the config.
 
 bombs:
