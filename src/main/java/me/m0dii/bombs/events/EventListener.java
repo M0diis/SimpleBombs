@@ -152,35 +152,31 @@ public class EventListener implements Listener
             if(amount == 0)
             {
                 continue;
+}
+
+            ItemStack item = new ItemStack(material);
+
+            if(bomb.isSmeltEnabled())
+            {
+                if(bomb.smeltIsWhitelist())
+                {
+                    if(bomb.containsSmeltBlock(id.toUpperCase()))
+                    {
+                        item = getSmeltedItem(item);
+                    }
+                }
+                else if(!bomb.containsSmeltBlock(id.toUpperCase()))
+                {
+                    item = getSmeltedItem(item);
+                }
             }
 
-            
             if(amount <= 64)
             {
-                ItemStack item = new ItemStack(material, amount);
-
-                if(bomb.isSmeltEnabled())
-                {
-                    ItemStack result = null;
-                    Iterator<Recipe> iter = Bukkit.recipeIterator();
-                    
-                    while (iter.hasNext()) 
-                    {
-                        Recipe recipe = iter.next();
-
-                        if (!(recipe instanceof FurnaceRecipe)) 
-                            continue;
-
-                        if (((FurnaceRecipe) recipe).getInput().getType() != item.getType()) 
-                            continue;
-
-                       result = recipe.getResult();
-                       break;
-                    }
-                    result.setAmount(item.getAmount());
-                }
+                item.setAmount(amount);
 
                 p.getWorld().dropItemNaturally(p.getLocation(), item);
+
                 continue;
             }
             
@@ -190,12 +186,15 @@ public class EventListener implements Listener
             {
                 if(toGive > 64)
                 {
-                    p.getWorld().dropItemNaturally(p.getLocation(), new ItemStack(material, 64));
+                    item.setAmount(64);
+
+                    p.getWorld().dropItemNaturally(p.getLocation(), item);
                     toGive -= 64;
                 }
                 else
                 {
-                    p.getWorld().dropItemNaturally(p.getLocation(), new ItemStack(material, toGive));
+                    item.setAmount(toGive);
+                    p.getWorld().dropItemNaturally(p.getLocation(), item);
                 }
         
             }
@@ -203,6 +202,33 @@ public class EventListener implements Listener
         
         brokenBlocks.clear();
         stuff.clear();
+    }
+
+    private ItemStack getSmeltedItem(ItemStack item) 
+    {
+        ItemStack result = null;
+        Iterator<Recipe> iter = Bukkit.recipeIterator();
+        
+        while (iter.hasNext()) 
+        {
+            Recipe recipe = iter.next();
+      
+            if (!(recipe instanceof FurnaceRecipe)) 
+                continue;
+      
+            if (((FurnaceRecipe) recipe).getInput().getType() != item.getType()) 
+                continue;
+      
+            result = recipe.getResult();
+            break;
+        }
+      
+        if(result != null)
+        {
+            item = result;
+        }
+        
+        return item;
     }
     
     @EventHandler

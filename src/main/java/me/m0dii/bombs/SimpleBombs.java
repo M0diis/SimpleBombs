@@ -174,12 +174,12 @@ public class SimpleBombs extends JavaPlugin
                     bomb.setCheckedBlocks(blocks);
                 }
 
-                if(sec.contains(key + "smelt", true))
+                if(sec.contains(key + ".smelt", true))
                 {
                     List<String> blocks = sec.getStringList(key + ".smelt.blocks");
                     
                     boolean whitelist = sec.getBoolean(key + ".smelt.whitelist", false);
-                    boolean enabled = sec.getBoolean(key + ".smelt.enabled", true);
+                    boolean enabled = sec.getBoolean(key + ".smelt.enable", false);
 
                     bomb.setSmeltIsWhitelist(whitelist);
                     bomb.setSmeltBlocks(blocks);

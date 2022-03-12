@@ -49,9 +49,9 @@ public class Bomb
     private boolean ignorePerm;
     private boolean sendMessage;
     
-    private boolean destroyIsWhitelist;
-    private boolean smeltIsWhitelist;
-    private boolean smeltIsEnabled;
+    private boolean destroyIsWhitelist = true;
+    private boolean smeltIsWhitelist = true;
+    private boolean smeltIsEnabled = false;
     
     public Bomb(int id, String name, Material material, List<String> lore, double throwStrength, int radius, int fortune,
                 int time,
