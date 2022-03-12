@@ -1,9 +1,10 @@
 package me.m0dii.bombs.events;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import me.m0dii.bombs.Bomb;
+import me.m0dii.bombs.bomb.Bomb;
 import me.m0dii.bombs.SimpleBombs;
-import me.m0dii.bombs.utils.BombType;
+import me.m0dii.bombs.bomb.BombType;
+import me.m0dii.bombs.utils.Config;
 import me.m0dii.bombs.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -25,18 +26,17 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class EventListener implements Listener
 {
     private final SimpleBombs plugin;
+    private final Config cfg;
     
     public EventListener(final SimpleBombs plugin)
     {
         this.plugin = plugin;
+        this.cfg = plugin.getCfg();
     }
     
     private final List<Item> droppedItems = new ArrayList<>();
@@ -72,7 +72,7 @@ public class EventListener implements Listener
         {
             if(!p.hasPermission(bomb.getPermission()))
             {
-                p.sendMessage(Utils.format(plugin.getConfig().getString("no-permission-bomb")));
+                p.sendMessage(cfg.getStrf("no-permission-bomb"));
         
                 return;
             }
@@ -152,7 +152,7 @@ public class EventListener implements Listener
             if(amount == 0)
             {
                 continue;
-}
+            }
 
             ItemStack item = new ItemStack(material);
 
@@ -259,7 +259,12 @@ public class EventListener implements Listener
         
         if(meta != null)
         {
-            meta.setDisplayName(bomb.getName());
+            List<String> lore = new ArrayList<>();
+            
+            lore.add(UUID.randomUUID().toString());
+            
+            meta.setLore(lore);
+            
             droppedItemStack.setItemMeta(meta);
         }
         
@@ -276,7 +281,7 @@ public class EventListener implements Listener
         Bukkit.getScheduler().runTaskLater(plugin, () ->
         {
             Bukkit.getPluginManager().callEvent(new BombExplodeEvent(bomb, p, drop.getLocation()));
-        
+            
             drop.getWorld().spawnParticle(bomb.getEffect(), drop.getLocation(), 5);
         
             Utils.removeHologram(hg);
@@ -325,35 +330,38 @@ public class EventListener implements Listener
     
         applyBlocksFortune(player, bomb, explodedBlocks);
     
-        for (Block b : explodedBlocks)
+        Bukkit.getScheduler().runTask(plugin, () ->
         {
-            if(!bomb.doDestroyLiquids())
+            for (Block b : explodedBlocks)
             {
-                String name = b.getType().name().toUpperCase();
-        
-                if(name.contains("WATER") || name.contains("LAVA")
-                        || b.getType().equals(Material.BEDROCK))
+                if(!bomb.doDestroyLiquids())
                 {
-                    continue;
-                }
-            }
+                    String name = b.getType().name().toUpperCase();
             
-            if(bomb.hasCheckedBlocks())
-            {
-                if(bomb.destroyIsWhitelist() && bomb.containsCheckedBlock(b.getType().name().toUpperCase()))
-                {
-                    b.setType(Material.AIR);
+                    if(name.contains("WATER") || name.contains("LAVA")
+                            || b.getType().equals(Material.BEDROCK))
+                    {
+                        continue;
+                    }
                 }
-                else if(!bomb.destroyIsWhitelist() && !bomb.containsCheckedBlock(b.getType().name().toUpperCase()))
+        
+                if(bomb.hasCheckedBlocks())
+                {
+                    if(bomb.destroyIsWhitelist() && bomb.containsCheckedBlock(b.getType().name().toUpperCase()))
+                    {
+                        b.setType(Material.AIR);
+                    }
+                    else if(!bomb.destroyIsWhitelist() && !bomb.containsCheckedBlock(b.getType().name().toUpperCase()))
+                    {
+                        b.setType(Material.AIR);
+                    }
+                }
+                else
                 {
                     b.setType(Material.AIR);
                 }
             }
-            else
-            {
-                b.setType(Material.AIR);
-            }
-        }
+        });
     
         if(bomb.getEntityDamage() != 0)
         {
@@ -377,8 +385,6 @@ public class EventListener implements Listener
                 Location newLoc = loc.clone();
                 
                 newLoc.setDirection(getRandomDirection());
-    
-                copy.setName(bomb.getName() + " " + i);
                 
                 copy.setIgnorePerm(true);
                 copy.setSendMessage(false);
@@ -389,8 +395,8 @@ public class EventListener implements Listener
         
         if(bomb.doSendMessage())
         {
-            player.sendMessage(Utils.format(plugin.getConfig().getString("explosion-message").replace("%tier%",
-                    bomb.getId() + "")));
+            player.sendMessage(cfg.getStrf("explosion-message")
+                    .replace("%tier%", bomb.getId() + ""));
         }
     }
     

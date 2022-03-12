@@ -8,8 +8,8 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
-import me.m0dii.bombs.Bomb;
-import me.m0dii.bombs.BombTime;
+import me.m0dii.bombs.bomb.Bomb;
+import me.m0dii.bombs.bomb.BombTime;
 import me.m0dii.bombs.SimpleBombs;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -73,7 +73,7 @@ public class Utils
     
     public static String getBombNameFromID(int ID)
     {
-        return SimpleBombs.getInstance().getConfig().getString("bombs." + ID + ".name");
+        return SimpleBombs.getInstance().getCfg().getStr("bombs." + ID + ".name");
     }
     
     public static int getBombID(String itemName)

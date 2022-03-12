@@ -1,4 +1,4 @@
-package me.m0dii.bombs.utils;
+package me.m0dii.bombs.bomb;
 
 public enum BombType
 {

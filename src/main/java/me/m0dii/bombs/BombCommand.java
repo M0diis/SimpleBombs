@@ -1,5 +1,7 @@
 package me.m0dii.bombs;
 
+import me.m0dii.bombs.bomb.Bomb;
+import me.m0dii.bombs.utils.Config;
 import me.m0dii.bombs.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -17,9 +19,13 @@ public class BombCommand implements CommandExecutor, TabCompleter
 {
     private final SimpleBombs plugin;
     
+    private final Config cfg;
+    
     public BombCommand(SimpleBombs plugin)
     {
         this.plugin = plugin;
+        
+        this.cfg = plugin.getCfg();
     }
     
     @Override
@@ -27,7 +33,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
     {
         if(!sender.hasPermission("simplebombs.use"))
         {
-            sender.sendMessage(Utils.format(plugin.getConfig().getString("no-permission-command")));
+            sender.sendMessage(cfg.getStrf("no-permission-command"));
         
             return true;
         }
@@ -41,7 +47,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
     {
         if(args.length == 0)
         {
-            sender.sendMessage(Utils.format(plugin.getConfig().getString("usage")));
+            sender.sendMessage(cfg.getStrf("usage"));
         
             return;
         }
@@ -50,16 +56,14 @@ public class BombCommand implements CommandExecutor, TabCompleter
         {
             if(!sender.hasPermission("simplebombs.command.reload"))
             {
-                sender.sendMessage(Utils.format(plugin.getConfig().getString("no-permission-command")));
+                sender.sendMessage(cfg.getStrf("no-permission-command"));
                 
                 return;
             }
+    
+            plugin.getCfg().reload();
             
-            plugin.reloadConfig();
-            
-            plugin.generateBombs();
-        
-            sender.sendMessage(Utils.format(plugin.getConfig().getString("config-reloaded")));
+            sender.sendMessage(cfg.getStrf("config-reloaded"));
         
             return;
         }
@@ -68,14 +72,14 @@ public class BombCommand implements CommandExecutor, TabCompleter
         {
             if(!sender.hasPermission("simplebombs.command.give"))
             {
-                sender.sendMessage(Utils.format(plugin.getConfig().getString("no-permission-command")));
+                sender.sendMessage(cfg.getStrf("no-permission-command"));
         
                 return;
             }
             
             if(args[1] == null)
             {
-                sender.sendMessage(Utils.format(plugin.getConfig().getString("usage")));
+                sender.sendMessage(cfg.getStrf("usage"));
             
                 return;
             }
@@ -84,7 +88,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
     
             if(receiver == null || !receiver.isOnline())
             {
-                sender.sendMessage(Utils.format(plugin.getConfig().getString("invalid-player")));
+                sender.sendMessage(cfg.getStrf("invalid-player"));
     
                 return;
             }
@@ -101,7 +105,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
     
             if(bomb == null)
             {
-                sender.sendMessage(Utils.format(plugin.getConfig().getString("invalid-bomb-id")));
+                sender.sendMessage(cfg.getStrf("invalid-bomb-id"));
 
                 return;
             }
@@ -135,7 +139,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
             return;
         }
     
-        sender.sendMessage(Utils.format(plugin.getConfig().getString("usage")));
+        sender.sendMessage(cfg.getStrf("usage"));
     }
     
     @Override
@@ -163,7 +167,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
         
         if(args.length == 3 && args[0].equalsIgnoreCase("give"))
         {
-            for(Integer key : plugin.getBombs().keySet())
+            for(Integer key : cfg.getBombs().keySet())
             {
                 completes.add(key + "");
             }

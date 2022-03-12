@@ -5,45 +5,58 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
+import me.m0dii.bombs.bomb.Bomb;
+import me.m0dii.bombs.bomb.BombTime;
 import me.m0dii.bombs.events.EventListener;
-import me.m0dii.bombs.utils.BombType;
+import me.m0dii.bombs.utils.Config;
 import me.m0dii.bombs.utils.UpdateChecker;
 import me.m0dii.bombs.utils.Utils;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class SimpleBombs extends JavaPlugin
 {
+    /**
+     * The plugin instance.
+     */
     private static SimpleBombs instance;
     
+    /**
+     * SimpleBombs instance getter.
+     *
+     * @return The SimpleBombs instance.
+     */
     public static SimpleBombs getInstance()
     {
         return instance;
     }
     
-    private Map<Integer, Bomb> bombs;
+    private Config cfg;
     
-    public Map<Integer, Bomb> getBombs()
+    public Config getCfg()
     {
-        return bombs;
+        return cfg;
     }
     
+    /**
+     * Get bomb by id.
+     * @see Bomb for Bomb class.
+     *
+     * @param id The id of the bomb.
+     * @return Bomb or null if not found.
+     */
     public Bomb getBomb(int id)
     {
-        return bombs.getOrDefault(id, null);
+        return cfg.getBomb(id);
     }
     
     public void onEnable()
     {
         instance = this;
+        
+        cfg = new Config(this);
         
         getCommand("bomb").setExecutor(new BombCommand(this));
         
@@ -53,18 +66,24 @@ public class SimpleBombs extends JavaPlugin
     
         scheduleTasks();
         
-        generateBombs();
-        
         checkForUpdates();
         
         setupMetrics();
     }
     
+    /**
+     * Register WorldGuard flag.
+     */
     public void onLoad()
     {
         registerWorldGuardFlags();
     }
     
+    /**
+     * Check for updates.
+     *
+     * @see UpdateChecker
+     */
     private void checkForUpdates()
     {
         new UpdateChecker(this, 100596).getVersion(ver ->
@@ -80,15 +99,23 @@ public class SimpleBombs extends JavaPlugin
         });
     }
     
+    /**
+     * Setup data collection.
+     *
+     * @see Metrics
+     */
     private void setupMetrics()
     {
         Metrics metrics = new Metrics(this, 14582);
         
-        metrics.addCustomChart(new SingleLineChart("managing_bombs", bombs::size));
+        metrics.addCustomChart(new SingleLineChart("managing_bombs", cfg.getBombs()::size));
     }
     
     public static StateFlag WG_BOMBS;
     
+    /**
+     * Register custom WorldGuard flag.
+     */
     private void registerWorldGuardFlags()
     {
         if(Bukkit.getPluginManager().getPlugin("WorldGuard") == null)
@@ -115,117 +142,9 @@ public class SimpleBombs extends JavaPlugin
         }
     }
     
-    public void generateBombs()
-    {
-        this.bombs = new HashMap<>();
-        
-        ConfigurationSection sec = getConfig().getConfigurationSection("bombs");
-    
-        if(sec != null)
-        {
-            for(String key : sec.getKeys(false))
-            {
-                int id = Integer.parseInt(key);
-                
-                String name = sec.getString(key + ".name");
-                Material material = Material.getMaterial(sec.getString(key + ".material", "FIRE_CHARGE"));
-                
-                int radius = sec.getInt(key + ".radius", 3);
-                int fortune = sec.getInt(key + ".fortune", 1);
-                
-                int time = sec.getInt(key + ".detonation-time", 3);
-                String effect = sec.getString(key + ".effect", "LARGE_EXPLOSION");
-                String permission = sec.getString(key + ".permission", "simplebombs.bomb." + id);
-                
-                List<String> lore = sec.getStringList(key + ".lore");
-                
-                String hologram = sec.getString(key + ".detonation-text", "&f&l%time%");
-                
-                double throwStrength = sec.getDouble(key + ".throw-strength", 1.5D);
-                
-                boolean destroyLiquids = sec.getBoolean(key + ".destroy-liquids", false);
-                
-                boolean glowing = sec.getBoolean(key + ".glowing", false);
-                
-                int entityDamage = sec.getInt(key + ".entity-damage");
-                
-                String throwSound = sec.getString(key + ".sound.throw", "ENTITY.ARROW.SHOOT");
-                String explodeSound = sec.getString(key + ".sound.explode", "ENTITY.GENERIC.EXPLODE");
-
-                Bomb bomb = new Bomb(id, name, material, lore, throwStrength, radius, fortune, time, permission);
-                
-                bomb.clearProperties();
-                
-                bomb.setEffect(effect);
-                bomb.setHologramText(hologram);
-                bomb.setDestroyLiquids(destroyLiquids);
-                bomb.setDamage(entityDamage);
-                bomb.setGlowing(glowing);
-                bomb.setExplodeSound(explodeSound);
-                bomb.setThrowSound(throwSound);
-                
-                if(sec.contains(key + ".destroy", true))
-                {
-                    List<String> blocks = sec.getStringList(key + ".destroy.blocks");
-                    
-                    boolean whitelist = sec.getBoolean(key + ".destroy.whitelist", true);
-                    
-                    bomb.setDestroyIsWhitelist(whitelist);
-                    bomb.setCheckedBlocks(blocks);
-                }
-
-                if(sec.contains(key + ".smelt", true))
-                {
-                    List<String> blocks = sec.getStringList(key + ".smelt.blocks");
-                    
-                    boolean whitelist = sec.getBoolean(key + ".smelt.whitelist", false);
-                    boolean enabled = sec.getBoolean(key + ".smelt.enable", false);
-
-                    bomb.setSmeltIsWhitelist(whitelist);
-                    bomb.setSmeltBlocks(blocks);
-                    bomb.setSmeltEnabled(enabled);
-                }
-                
-                bomb = handleCustomProperties(sec, key, bomb);
-                
-                bombs.put(id, bomb);
-            }
-        }
-    }
-    
-    private Bomb handleCustomProperties(ConfigurationSection sec, String key, Bomb bomb)
-    {
-        if(sec == null || !sec.contains(key + ".custom", true))
-        {
-            return bomb;
-        }
-        
-        if(sec.contains(key + ".custom"))
-        {
-            String type = sec.getString(key + ".custom.explosion-type");
-            
-            if(type == null)
-            {
-                return bomb;
-            }
-            
-            if(type.equalsIgnoreCase("scatter"))
-            {
-                String bombType = sec.getString(key + ".custom.bomb-type");
-                String amount = sec.getString(key + ".custom.amount");
-    
-                bomb.setBombType(BombType.SCATTER);
-
-                bomb.addProperty("bomb-type", bombType);
-                bomb.addProperty("amount", amount);
-    
-                return bomb;
-            }
-        }
-    
-        return bomb;
-    }
-    
+    /**
+     * Schedule repeating tasks for holograms.
+     */
     private void scheduleTasks()
     {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () ->

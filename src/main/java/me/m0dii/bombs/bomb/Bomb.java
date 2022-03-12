@@ -1,6 +1,5 @@
-package me.m0dii.bombs;
+package me.m0dii.bombs.bomb;
 
-import me.m0dii.bombs.utils.BombType;
 import me.m0dii.bombs.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.Particle;

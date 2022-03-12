@@ -1,4 +1,4 @@
-package me.m0dii.bombs;
+package me.m0dii.bombs.bomb;
 
 public class BombTime
 {

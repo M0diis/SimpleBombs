@@ -1,6 +1,6 @@
 package me.m0dii.bombs.events;
 
-import me.m0dii.bombs.Bomb;
+import me.m0dii.bombs.bomb.Bomb;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
