@@ -15,10 +15,25 @@ import me.m0dii.bombs.utils.Utils;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
+
+import java.io.File;
 
 public class SimpleBombs extends JavaPlugin
 {
+    public SimpleBombs()
+    {
+        super();
+    }
+    
+    protected SimpleBombs(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file)
+    {
+        super(loader, description, dataFolder, file);
+    }
+    
     /**
      * The plugin instance.
      */
@@ -41,6 +56,18 @@ public class SimpleBombs extends JavaPlugin
         return cfg;
     }
     
+    private static boolean testMode = false;
+    
+    public static void setTestMode(boolean mode)
+    {
+        testMode = mode;
+    }
+    
+    public static boolean isTestMode()
+    {
+        return testMode;
+    }
+    
     /**
      * Get bomb by id.
      * @see Bomb for Bomb class.
@@ -58,9 +85,14 @@ public class SimpleBombs extends JavaPlugin
         instance = this;
         
         cfg = new Config(this);
+    
+        PluginCommand cmd = getCommand("bomb");
         
-        getCommand("bomb").setExecutor(new BombCommand(this));
-        
+        if(cmd != null)
+        {
+            cmd.setExecutor(new BombCommand(this));
+        }
+    
         Bukkit.getPluginManager().registerEvents(new EventListener(this), this);
         
         saveDefaultConfig();
@@ -69,7 +101,10 @@ public class SimpleBombs extends JavaPlugin
         
         checkForUpdates();
         
-        setupMetrics();
+        if(!isTestMode())
+        {
+            setupMetrics();
+        }
     }
     
     /**
@@ -77,7 +112,10 @@ public class SimpleBombs extends JavaPlugin
      */
     public void onLoad()
     {
-        registerWorldGuardFlags();
+        if(!isTestMode())
+        {
+            registerWorldGuardFlags();
+        }
     }
     
     /**

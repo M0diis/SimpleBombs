@@ -34,6 +34,7 @@ bombs:
       throw: 'ENTITY_ARROW_SHOOT'
       explode: 'ENTITY_GENERIC_EXPLODE'
     destroy-liquids: true
+    destroy-blocks: true
     smelt: 
       enable: true
       whitelist: true
@@ -64,6 +65,7 @@ bombs:
       throw: 'ENTITY_ARROW_SHOOT'
       explode: 'ENTITY_GENERIC_EXPLODE'
     destroy-liquids: true
+    destroy-blocks: true
     smelt: 
       enable: true
       whitelist: true
@@ -91,6 +93,7 @@ bombs:
       throw: 'ENTITY_ARROW_SHOOT'
       explode: 'ENTITY_GENERIC_EXPLODE'
     destroy-liquids: true
+    destroy-blocks: true
     smelt: 
       enable: true
       whitelist: true

@@ -1,11 +1,14 @@
 package me.m0dii.bombs.utils;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.m0dii.bombs.bomb.Bomb;
 import me.m0dii.bombs.SimpleBombs;
 import me.m0dii.bombs.bomb.BombType;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +23,8 @@ public class Config
     
     private final SimpleBombs plugin;
     
+    private boolean placeholdersEnabled;
+    
     public Config(SimpleBombs plugin)
     {
         this.plugin = plugin;
@@ -32,6 +37,8 @@ public class Config
         plugin.reloadConfig();
         
         load();
+    
+        this.placeholdersEnabled = plugin.getServer().getPluginManager().getPlugin("PlaceholderAPI") != null;
     }
     
     public void load()
@@ -39,6 +46,8 @@ public class Config
         this.cfg = plugin.getConfig();
         
         generateBombs();
+        
+        this.placeholdersEnabled = plugin.getServer().getPluginManager().getPlugin("PlaceholderAPI") != null;
     }
     
     public void generateBombs()
@@ -70,6 +79,7 @@ public class Config
                 double throwStrength = sec.getDouble(key + ".throw-strength", 1.5D);
                 
                 boolean destroyLiquids = sec.getBoolean(key + ".destroy-liquids", false);
+                boolean destroyBlocks = sec.getBoolean(key + ".destroy-blocks", true);
                 
                 boolean glowing = sec.getBoolean(key + ".glowing", false);
                 
@@ -85,6 +95,7 @@ public class Config
                 bomb.setEffect(effect);
                 bomb.setHologramText(hologram);
                 bomb.setDestroyLiquids(destroyLiquids);
+                bomb.setDestroyBlocks(destroyBlocks);
                 bomb.setDamage(entityDamage);
                 bomb.setGlowing(glowing);
                 bomb.setExplodeSound(explodeSound);
@@ -190,6 +201,20 @@ public class Config
     public String getStrf(String path)
     {
         return Utils.format(this.cfg.getString(path, ""));
+    }
+    
+    public String getStrfp(String path, CommandSender sender)
+    {
+        String str = this.cfg.getString(path, "");
+        
+        if(sender instanceof Player && placeholdersEnabled)
+        {
+            Player p = (Player) sender;
+            
+            str = PlaceholderAPI.setPlaceholders(p, str);
+        }
+        
+        return Utils.format(str);
     }
     
     public String getStr(String path, String def)

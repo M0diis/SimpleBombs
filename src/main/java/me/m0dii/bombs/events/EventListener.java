@@ -274,7 +274,7 @@ public class EventListener implements Listener
     
         droppedItems.add(drop);
     
-        final Hologram hg = Utils.createHologram(drop.getLocation(), bomb);
+        final Hologram hg = Utils.createHologram(p, drop.getLocation(), bomb);
     
         Utils.hologramItem.put(hg, drop);
     

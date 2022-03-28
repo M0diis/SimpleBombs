@@ -8,15 +8,18 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.m0dii.bombs.bomb.Bomb;
 import me.m0dii.bombs.bomb.BombTime;
 import me.m0dii.bombs.SimpleBombs;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -50,13 +53,18 @@ public class Utils
         return ChatColor.stripColor(format(text));
     }
     
+    public static String setPlaceholders(String text, Player p, Bomb bomb)
+    {
+        return setPlaceholders(PlaceholderAPI.setPlaceholders(p, text), bomb);
+    }
+    
     public static String setPlaceholders(String text, Bomb bomb)
     {
          return text.replaceAll("%radius%", String.valueOf(bomb.getRadius()))
                     .replaceAll("%damage%", String.valueOf(bomb.getEntityDamage()))
                     .replaceAll("%id%", String.valueOf(bomb.getId()))
                     .replaceAll("%time%", String.valueOf(bomb.getTime()))
-                    .replaceAll("%name%", String.valueOf(bomb.getName()))
+                    .replaceAll("%name%", String.valueOf(bomb.getName(false)))
                     .replaceAll("%throw_strength%", String.valueOf(bomb.getThrowStrength()))
                     .replaceAll("%fortune%", String.valueOf(bomb.getFortune()));
     }
@@ -137,9 +145,15 @@ public class Utils
                     {
                         continue;
                     }
+    
+                    World world = center.getWorld();
                     
-                    Block block = center.getWorld().getBlockAt(
-                            X + center.getBlockX(), Y + center.getBlockY(), Z + center.getBlockZ());
+                    if(world == null)
+                    {
+                        continue;
+                    }
+                    
+                    Block block = world.getBlockAt(X + center.getBlockX(), Y + center.getBlockY(), Z + center.getBlockZ());
     
                     if (canExplodeWorldGuard(block.getLocation()))
                     {
@@ -168,17 +182,19 @@ public class Utils
         return bd.doubleValue();
     }
     
-    public static Hologram createHologram(Location loc, Bomb bomb)
+    public static Hologram createHologram(Player p, Location loc, Bomb bomb)
     {
         Hologram gram = HologramsAPI.createHologram(SimpleBombs.getInstance(), loc.clone().add(0.0D, 1.0D, 0.0D));
-        
-        String text = bomb.getHologramText().replace("%time%", bomb.getTime() + "");
+
+        String text = setPlaceholders(bomb.getHologramText(), p, bomb);
         
         gram.appendTextLine(format(text));
         
         holograms.add(gram);
         
         BombTime time = new BombTime(bomb.getId(), bomb.getTime());
+        
+        time.setPlayer(p);
         
         hologramTime.put(gram, time);
         
@@ -191,8 +207,8 @@ public class Utils
         
         Bomb bomb = SimpleBombs.getInstance().getBomb(bombTime.getID());
     
-        String text = bomb.getHologramText().replace("%time%", bombTime.getTime() + "");
-        
+        String text = setPlaceholders(bomb.getHologramText(), bombTime.getPlayer(), bomb);
+
         gram.insertTextLine(0, format(text));
     }
     

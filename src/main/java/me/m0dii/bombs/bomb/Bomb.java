@@ -1,5 +1,6 @@
 package me.m0dii.bombs.bomb;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.m0dii.bombs.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -35,7 +36,8 @@ public class Bomb
     private Particle effect;
     private Sound throwSound = null;
     private Sound explodeSound = null;
-
+    
+    private boolean destroyBlocks = true;
     private boolean destroyLiquids;
     private int entityDamage;
     private boolean glowing;
@@ -52,6 +54,7 @@ public class Bomb
     private boolean destroyIsWhitelist = true;
     private boolean smeltIsWhitelist = true;
     private boolean smeltIsEnabled = false;
+
     
     public Bomb(int id, String name, Material material, List<String> lore, double throwStrength, int radius, int fortune,
                 int time,
@@ -211,8 +214,13 @@ public class Bomb
         return id;
     }
     
-    public String getName()
+    public String getName(boolean formatted)
     {
+        if(formatted)
+        {
+            return Utils.format(Utils.setPlaceholders(name, null, this));
+        }
+        
         return name;
     }
     
@@ -225,7 +233,7 @@ public class Bomb
     {
         if(formatted)
         {
-            return lore.stream().map(Utils::format).map(s -> Utils.setPlaceholders(s, this)).collect(Collectors.toList());
+            return lore.stream().map(Utils::format).map(s -> Utils.setPlaceholders(s, null, this)).collect(Collectors.toList());
         }
         
         return lore;
@@ -240,7 +248,8 @@ public class Bomb
         
         if(meta != null)
         {
-            meta.setDisplayName(Utils.format(name));
+            meta.setDisplayName(Utils.format(PlaceholderAPI.setPlaceholders(null, name)));
+            
             if(glowing)
             {
                 meta.addEnchant(Enchantment.DURABILITY, 1, true);
@@ -344,5 +353,15 @@ public class Bomb
     public boolean isGlowing()
     {
         return glowing;
+    }
+    
+    public void setDestroyBlocks(boolean destroyBlocks)
+    {
+        this.destroyBlocks = destroyBlocks;
+    }
+    
+    public boolean doDestroyBlocks()
+    {
+        return destroyBlocks;
     }
 }

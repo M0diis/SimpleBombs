@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'kr.entree.spigradle' version '2.3.4'
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -9,7 +10,7 @@ sourceCompatibility = 8
 targetCompatibility = 8
 
 group 'me.m0dii'
-version '1.5.0'
+version '1.6.0'
 
 shadowJar {
     relocate "org.bstats", "me.m0dii.metrics"
@@ -65,6 +66,10 @@ repositories {
     maven {
         url "https://repo.mattstudios.me/artifactory/public/"
     }
+
+    maven {
+        url "https://repo.extendedclip.com/content/repositories/placeholderapi/"
+    }
 }
 
 dependencies {
@@ -72,7 +77,23 @@ dependencies {
 
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.5'
     compileOnly 'com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.4.9'
+    compileOnly 'me.clip:placeholderapi:2.11.1'
 
     implementation 'org.bstats:bstats-bukkit:3.0.0'
     implementation "dev.triumphteam:triumph-gui:3.1.2"
+
+    implementation 'com.github.seeseemelk:MockBukkit:v1.16-SNAPSHOT'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+    testImplementation 'com.sk89q.worldguard:worldguard-bukkit:7.0.5'
+    testImplementation 'com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.4.9'
+    testImplementation "dev.triumphteam:triumph-gui:3.1.2"
 }
+
+test {
+    useJUnitPlatform()
+}
+
+test.dependsOn shadowJar

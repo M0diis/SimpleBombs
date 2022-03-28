@@ -6,6 +6,7 @@ import dev.triumphteam.gui.guis.PaginatedGui;
 import me.m0dii.bombs.SimpleBombs;
 import me.m0dii.bombs.bomb.Bomb;
 import me.m0dii.bombs.utils.Config;
+import me.m0dii.bombs.utils.InventoryUtils;
 import me.m0dii.bombs.utils.Utils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -39,7 +40,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
     {
         if(!sender.hasPermission("simplebombs.use"))
         {
-            sender.sendMessage(cfg.getStrf("no-permission-command"));
+            sender.sendMessage(cfg.getStrfp("no-permission-command", sender));
         
             return true;
         }
@@ -53,7 +54,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
     {
         if(args.length == 0)
         {
-            sender.sendMessage(cfg.getStrf("usage"));
+            sender.sendMessage(cfg.getStrfp("usage", sender));
         
             return;
         }
@@ -64,7 +65,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
             {
                 if(!sender.hasPermission("simplebombs.command.reload"))
                 {
-                    sender.sendMessage(cfg.getStrf("no-permission-command"));
+                    sender.sendMessage(cfg.getStrfp("no-permission-command", sender));
         
                     return;
                 }
@@ -80,79 +81,32 @@ public class BombCommand implements CommandExecutor, TabCompleter
             {
                 if(!sender.hasPermission("simplebombs.command.gui"))
                 {
-                    sender.sendMessage(cfg.getStrf("no-permission-command"));
+                    sender.sendMessage(cfg.getStrfp("no-permission-command", sender));
         
                     return;
                 }
-    
-                PaginatedGui gui = Gui.paginated()
-                        .title(Component.text(Utils.format("&8&lSimpleBombs List")))
-                        .rows(6)
-                        .pageSize(45)
-                        .create();
-    
-                gui.setItem(6, 3, ItemBuilder.from(Material.PAPER).setName(Utils.format("&aPrevious")).asGuiItem(e -> {
-                    gui.previous();
-                    e.setCancelled(true);
-                }));
-                gui.setItem(6, 7, ItemBuilder.from(Material.PAPER).setName(Utils.format("&aNext")).asGuiItem(e -> {
-                    gui.next();
-                    e.setCancelled(true);
-                }));
-    
-                for(Bomb bomb : plugin.getCfg().getBombs().values())
-                {
-                    Component name = Component.text(Utils.format(bomb.getName() + " &8[&7" + bomb.getId() + "&8]"));
-    
-                    ItemBuilder builder = ItemBuilder.from(bomb.getMaterial()).name(name).setLore(bomb.getLore(true));
-                    
-                    if(bomb.isGlowing()) builder.glow();
-    
-                    gui.addItem(builder.asGuiItem(e ->
-                    {
-                        if(e.getWhoClicked() instanceof Player)
-                        {
-                            Player clickee = (Player) e.getWhoClicked();
-        
-                            String itemName = Utils.stripColor(e.getCurrentItem().getItemMeta().getDisplayName());
-        
-                            int id = Integer.parseInt(itemName.charAt(itemName.length() - 2) + "");
-                            
-                            Bomb b = plugin.getCfg().getBomb(id);
-        
-                            if(b != null)
-                            {
-                                clickee.getInventory().addItem(b.getItemStack());
-                            }
-                        }
-    
-                        e.setCancelled(true);
-                    }));
-                }
-                
+
                 if(sender instanceof Player)
                 {
-                    gui.open((Player) sender);
+                    InventoryUtils.getPaginatedGui().open((Player) sender);
                 }
 
                 return;
             }
-            
-            
         }
     
         if(args.length >= 3 && args[0].equalsIgnoreCase("give"))
         {
             if(!sender.hasPermission("simplebombs.command.give"))
             {
-                sender.sendMessage(cfg.getStrf("no-permission-command"));
+                sender.sendMessage(cfg.getStrfp("no-permission-command", sender));
         
                 return;
             }
             
             if(args[1] == null)
             {
-                sender.sendMessage(cfg.getStrf("usage"));
+                sender.sendMessage(cfg.getStrfp("usage", sender));
             
                 return;
             }
@@ -161,7 +115,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
     
             if(receiver == null || !receiver.isOnline())
             {
-                sender.sendMessage(cfg.getStrf("invalid-player"));
+                sender.sendMessage(cfg.getStrfp("invalid-player", sender));
     
                 return;
             }
@@ -178,7 +132,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
     
             if(bomb == null)
             {
-                sender.sendMessage(cfg.getStrf("invalid-bomb-id"));
+                sender.sendMessage(cfg.getStrfp("invalid-bomb-id", sender));
 
                 return;
             }
@@ -200,7 +154,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
     
             receiver.getInventory().addItem(item);
     
-            String msg = cfg.getStrf("bomb-received");
+            String msg = cfg.getStrfp("bomb-received", sender);
             
             if(msg != null)
             {
@@ -211,7 +165,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
             return;
         }
     
-        sender.sendMessage(cfg.getStrf("usage"));
+        sender.sendMessage(cfg.getStrfp("usage", sender));
     }
     
     @Override
