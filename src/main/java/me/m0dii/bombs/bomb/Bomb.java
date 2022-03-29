@@ -37,6 +37,7 @@ public class Bomb
     private Sound throwSound = null;
     private Sound explodeSound = null;
     
+    private boolean autoSell = false;
     private boolean destroyBlocks = true;
     private boolean destroyLiquids;
     private int entityDamage;
@@ -248,7 +249,7 @@ public class Bomb
         
         if(meta != null)
         {
-            meta.setDisplayName(Utils.format(PlaceholderAPI.setPlaceholders(null, name)));
+            meta.setDisplayName(Utils.format(Utils.setPlaceholders(name, null, this)));
             
             if(glowing)
             {
@@ -363,5 +364,15 @@ public class Bomb
     public boolean doDestroyBlocks()
     {
         return destroyBlocks;
+    }
+    
+    public void setAutoSell(boolean autoSell)
+    {
+        this.autoSell = autoSell;
+    }
+    
+    public boolean doAutoSell()
+    {
+        return autoSell;
     }
 }

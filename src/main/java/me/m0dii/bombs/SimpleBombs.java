@@ -12,11 +12,14 @@ import me.m0dii.bombs.events.EventListener;
 import me.m0dii.bombs.utils.Config;
 import me.m0dii.bombs.utils.UpdateChecker;
 import me.m0dii.bombs.utils.Utils;
+import net.brcdev.shopgui.ShopGuiPlusApi;
+import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
@@ -104,6 +107,25 @@ public class SimpleBombs extends JavaPlugin
         if(!isTestMode())
         {
             setupMetrics();
+        }
+    
+        setupEconomy();
+    }
+    
+    private static Economy econ;
+    
+    public static Economy getEconomy()
+    {
+        return econ;
+    }
+    
+    private void setupEconomy()
+    {
+        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(Economy.class);
+        
+        if (economyProvider != null)
+        {
+            econ = economyProvider.getProvider();
         }
     }
     
