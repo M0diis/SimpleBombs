@@ -166,12 +166,7 @@ public class Utils
         return blocks;
     }
     
-    public static HashMap<Hologram, BombTime> hologramTime = new HashMap<>();
-    
-    public static HashMap<Hologram, Item> hologramItem = new HashMap<>();
-    
-    public static List<Hologram> holograms = new ArrayList<>();
-    
+
     public static double round(double value, int places)
     {
         if (places < 0) throw new IllegalArgumentException();
@@ -180,44 +175,6 @@ public class Utils
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         
         return bd.doubleValue();
-    }
-    
-    public static Hologram createHologram(Player p, Location loc, Bomb bomb)
-    {
-        Hologram gram = HologramsAPI.createHologram(SimpleBombs.getInstance(), loc.clone().add(0.0D, 1.0D, 0.0D));
-
-        String text = setPlaceholders(bomb.getHologramText(), p, bomb);
-        
-        gram.appendTextLine(format(text));
-        
-        holograms.add(gram);
-        
-        BombTime time = new BombTime(bomb.getId(), bomb.getTime());
-        
-        time.setPlayer(p);
-        
-        hologramTime.put(gram, time);
-        
-        return gram;
-    }
-    
-    public static void editHologram(Hologram gram, BombTime bombTime)
-    {
-        gram.removeLine(0);
-        
-        Bomb bomb = SimpleBombs.getInstance().getBomb(bombTime.getID());
-    
-        String text = setPlaceholders(bomb.getHologramText(), bombTime.getPlayer(), bomb);
-
-        gram.insertTextLine(0, format(text));
-    }
-    
-    public static void removeHologram(Hologram gram)
-    {
-        holograms.remove(gram);
-        hologramTime.remove(gram);
-        hologramItem.remove(gram);
-        gram.delete();
     }
     
     public static void logToFile(String file, String text)

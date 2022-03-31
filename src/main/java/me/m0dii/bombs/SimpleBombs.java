@@ -5,11 +5,13 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
+import eu.decentsoftware.holograms.api.DHAPI;
 import me.m0dii.bombs.bomb.Bomb;
 import me.m0dii.bombs.bomb.BombTime;
 import me.m0dii.bombs.commands.BombCommand;
 import me.m0dii.bombs.events.EventListener;
 import me.m0dii.bombs.utils.Config;
+import me.m0dii.bombs.utils.HologramUtils;
 import me.m0dii.bombs.utils.UpdateChecker;
 import me.m0dii.bombs.utils.Utils;
 import org.bstats.bukkit.Metrics;
@@ -129,11 +131,11 @@ public class SimpleBombs extends JavaPlugin
         {
             if (!this.getDescription().getVersion().equalsIgnoreCase(ver))
             {
-                getLogger().info("You are running an outdated version of SRV-Cron.");
+                getLogger().info("You are running an outdated version of SimpleBombs.");
                 getLogger().info("You are using: " + getDescription().getVersion() + ".");
                 getLogger().info("Latest version: " + ver + ".");
                 getLogger().info("You can download the latest version on Spigot:");
-                getLogger().info("https://www.spigotmc.org/resources/100382/");
+                getLogger().info("https://www.spigotmc.org/resources/100596/");
             }
         });
     }
@@ -188,39 +190,81 @@ public class SimpleBombs extends JavaPlugin
     {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () ->
         {
-            for (Hologram h : Utils.holograms)
+    
+            if(HologramUtils.getHologramPlugin() == HologramUtils.Plugin.HOLOGRAPHIC_DISPLAYS)
             {
-                h.teleport(Utils.hologramItem.get(h).getLocation().clone().add(0.0D, 1.0D, 0.0D));
+                for (com.gmail.filoghost.holographicdisplays.api.Hologram h : HologramUtils.hdHolograms)
+                {
+                    h.teleport(HologramUtils.hdHologramItem.get(h).getLocation().clone().add(0.0D, 1.0D, 0.0D));
+                }
+            }
+            else if(HologramUtils.getHologramPlugin() == HologramUtils.Plugin.DECENT_HOLOGRAMS)
+            {
+                for (eu.decentsoftware.holograms.api.holograms.Hologram h : HologramUtils.dhHolograms)
+                {
+                    DHAPI.moveHologram(h, HologramUtils.dhHologramItem.get(h).getLocation().clone().add(0.0D, 1.0D, 0.0D));
+                }
             }
         }, 0L, 0L);
         
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () ->
         {
-            for (Hologram gram : Utils.holograms)
+            if(HologramUtils.getHologramPlugin() == HologramUtils.Plugin.HOLOGRAPHIC_DISPLAYS)
             {
-                BombTime bombTime = Utils.hologramTime.get(gram);
-                
-                double time = bombTime.getTime();
-                
-                time -= 0.125D;
-                
-                if (time <= 0.0D)
+                for (com.gmail.filoghost.holographicdisplays.api.Hologram h : HologramUtils.hdHolograms)
                 {
-                    time = 0.0D;
+                    BombTime bombTime = HologramUtils.hdHologramTime.get(h);
+        
+                    double time = bombTime.getTime();
+        
+                    time -= 0.125D;
+        
+                    if (time <= 0.0D)
+                    {
+                        time = 0.0D;
+                    }
+        
+                    bombTime.setTime(Utils.round(time, 1));
+        
+                    HologramUtils.hdHologramTime.put(h, bombTime);
+        
+                    HologramUtils.editHdHologram(h, bombTime);
                 }
-                
-                bombTime.setTime(Utils.round(time, 1));
-                
-                Utils.hologramTime.put(gram, bombTime);
-                
-                Utils.editHologram(gram, bombTime);
             }
+            else if(HologramUtils.getHologramPlugin() == HologramUtils.Plugin.DECENT_HOLOGRAMS)
+            {
+                for (eu.decentsoftware.holograms.api.holograms.Hologram h : HologramUtils.dhHolograms)
+                {
+                    BombTime bombTime = HologramUtils.dhHologramTime.get(h);
+        
+                    double time = bombTime.getTime();
+        
+                    time -= 0.125D;
+        
+                    if (time <= 0.0D)
+                    {
+                        time = 0.0D;
+                    }
+        
+                    bombTime.setTime(Utils.round(time, 1));
+        
+                    HologramUtils.dhHologramTime.put(h, bombTime);
+        
+                    HologramUtils.editDhHologram(h, bombTime);
+                }
+            }
+
         }, 0L, 2L);
     }
     
     public void onDisable()
     {
-        for(Hologram h : Utils.holograms)
+        for(com.gmail.filoghost.holographicdisplays.api.Hologram h : HologramUtils.hdHolograms)
+        {
+            h.delete();
+        }
+        
+        for (eu.decentsoftware.holograms.api.holograms.Hologram h : HologramUtils.dhHolograms)
         {
             h.delete();
         }

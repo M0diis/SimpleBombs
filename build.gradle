@@ -15,6 +15,7 @@ version '1.6.0'
 shadowJar {
     relocate "org.bstats", "me.m0dii.metrics"
     relocate "dev.triumphteam.gui", "me.m0dii.gui"
+    relocate "net.brcdev.shopgui", "me.m0dii.shopgui"
 
     archiveFileName = "SimpleBombs-${version}.jar"
 }
@@ -90,6 +91,8 @@ dependencies {
     testImplementation 'com.sk89q.worldguard:worldguard-bukkit:7.0.5'
     testImplementation 'com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.4.9'
     testImplementation "dev.triumphteam:triumph-gui:3.1.2"
+
+    compileOnly 'com.github.decentsoftware-eu:decentholograms:2.3.1'
 }
 
 test {

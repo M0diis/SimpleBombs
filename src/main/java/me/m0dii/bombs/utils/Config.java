@@ -81,6 +81,8 @@ public class Config
                 boolean destroyLiquids = sec.getBoolean(key + ".destroy-liquids", false);
                 boolean destroyBlocks = sec.getBoolean(key + ".destroy-blocks", true);
                 
+                boolean autoSell = sec.getBoolean(key + ".auto-sell", false);
+                
                 boolean glowing = sec.getBoolean(key + ".glowing", false);
                 
                 int entityDamage = sec.getInt(key + ".entity-damage");
@@ -100,6 +102,7 @@ public class Config
                 bomb.setGlowing(glowing);
                 bomb.setExplodeSound(explodeSound);
                 bomb.setThrowSound(throwSound);
+//                bomb.setAutoSell(autoSell);
                 
                 if(sec.contains(key + ".destroy", true))
                 {
