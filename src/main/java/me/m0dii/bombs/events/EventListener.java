@@ -1,10 +1,10 @@
 package me.m0dii.bombs.events;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import me.m0dii.bombs.bomb.Bomb;
 import me.m0dii.bombs.SimpleBombs;
+import me.m0dii.bombs.bomb.Bomb;
 import me.m0dii.bombs.bomb.BombType;
 import me.m0dii.bombs.utils.Config;
+import me.m0dii.bombs.utils.HologramUtils;
 import me.m0dii.bombs.utils.Utils;
 import net.brcdev.shopgui.ShopGuiPlusApi;
 import net.milkbowl.vault.economy.Economy;
@@ -41,9 +41,6 @@ public class EventListener implements Listener
         this.cfg = plugin.getCfg();
     }
     
-    private final List<Item> droppedItems = new ArrayList<>();
-    private final  ArrayList<Player> used = new ArrayList<>();
-    
     @EventHandler
     public void onInteract(PlayerInteractEvent e)
     {
@@ -63,7 +60,7 @@ public class EventListener implements Listener
         
         e.setCancelled(true);
     
-        if(used.contains(p))
+        if(HologramUtils.used.contains(p))
         {
             return;
         }
@@ -86,7 +83,7 @@ public class EventListener implements Listener
     @EventHandler
     public void onItemPickup(EntityPickupItemEvent e)
     {
-        if (droppedItems.contains(e.getItem()))
+        if (HologramUtils.droppedItems.contains(e.getItem()))
         {
             e.setCancelled(true);
         }
@@ -102,9 +99,49 @@ public class EventListener implements Listener
             if (b != null)
             {
                 Material type = b.getType();
-                
-                if(type != Material.AIR)
+    
+                if(type == Material.AIR)
                 {
+                    continue;
+                }
+                
+                if(bomb.hasCheckedBlocks())
+                {
+                    if(bomb.destroyIsWhitelist() && bomb.containsCheckedBlock(type.name().toUpperCase()))
+                    {
+                        if(!brokenBlocks.contains(type.name()))
+                        {
+                            brokenBlocks.add(type.name());
+                            stuff.put(type.name(), bomb.getFortune());
+        
+                            continue;
+                        }
+    
+                        int al = stuff.get(type.name());
+    
+                        stuff.remove(type.name());
+                        stuff.put(type.name(), al + bomb.getFortune());
+                    }
+                    else if(!bomb.destroyIsWhitelist() && !bomb.containsCheckedBlock(type.name().toUpperCase()))
+                    {
+    
+                        if(!brokenBlocks.contains(type.name()))
+                        {
+                            brokenBlocks.add(type.name());
+                            stuff.put(type.name(), bomb.getFortune());
+        
+                            continue;
+                        }
+    
+                        int al = stuff.get(type.name());
+    
+                        stuff.remove(type.name());
+                        stuff.put(type.name(), al + bomb.getFortune());
+                    }
+                }
+                else
+                {
+    
                     if(!brokenBlocks.contains(type.name()))
                     {
                         brokenBlocks.add(type.name());
@@ -120,6 +157,7 @@ public class EventListener implements Listener
                 }
             }
         }
+        
         List<String> ingots = new ArrayList<>();
         HashMap<String, Integer> ingot_stuff = new HashMap<>();
         
@@ -293,7 +331,7 @@ public class EventListener implements Listener
             p.playSound(loc, throwSound, 1, 1);
         }
         
-        used.add(p);
+        HologramUtils.used.add(p);
     
         ItemStack droppedItemStack = new ItemStack(bomb.getMaterial());
         
@@ -314,25 +352,17 @@ public class EventListener implements Listener
     
         drop.setVelocity(loc.getDirection().multiply(bomb.getThrowStrength()));
     
-        droppedItems.add(drop);
-    
-        final Hologram hg = Utils.createHologram(p, drop.getLocation(), bomb);
-    
-        Utils.hologramItem.put(hg, drop);
-    
-        Bukkit.getScheduler().runTaskLater(plugin, () ->
+        HologramUtils.droppedItems.add(drop);
+        
+        if(HologramUtils.getHologramPlugin() == HologramUtils.Plugin.HOLOGRAPHIC_DISPLAYS)
         {
-            Bukkit.getPluginManager().callEvent(new BombExplodeEvent(bomb, p, drop.getLocation()));
-            
-            drop.getWorld().spawnParticle(bomb.getEffect(), drop.getLocation(), 5);
+            HologramUtils.handleHolographicDisplays(p, bomb, drop);
+        }
+        else if(HologramUtils.getHologramPlugin() == HologramUtils.Plugin.DECENT_HOLOGRAMS)
+        {
+            HologramUtils.handleDecentHolograms(p, bomb, drop);
+        }
         
-            Utils.removeHologram(hg);
-        
-            used.remove(p);
-            droppedItems.remove(drop);
-            drop.remove();
-        }, bomb.getTime() * 20L);
-    
         if(item == null)
         {
             return;
