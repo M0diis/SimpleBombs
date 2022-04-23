@@ -1,6 +1,5 @@
 package me.m0dii.bombs;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
@@ -14,7 +13,6 @@ import me.m0dii.bombs.utils.Config;
 import me.m0dii.bombs.utils.HologramUtils;
 import me.m0dii.bombs.utils.UpdateChecker;
 import me.m0dii.bombs.utils.Utils;
-import net.brcdev.shopgui.ShopGuiPlusApi;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SingleLineChart;
