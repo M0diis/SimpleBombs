@@ -6,6 +6,8 @@ import me.m0dii.bombs.bomb.BombType;
 import me.m0dii.bombs.utils.Config;
 import me.m0dii.bombs.utils.HologramUtils;
 import me.m0dii.bombs.utils.Utils;
+import net.brcdev.shopgui.ShopGuiPlusApi;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -193,6 +195,7 @@ public class EventListener implements Listener
             }
 
             ItemStack item = new ItemStack(material);
+            
 
             if(bomb.isSmeltEnabled())
             {
@@ -212,9 +215,16 @@ public class EventListener implements Listener
             if(amount <= 64)
             {
                 item.setAmount(amount);
-
-                p.getWorld().dropItemNaturally(p.getLocation(), item);
-
+    
+                if(bomb.doAutoSell())
+                {
+                    sellItem(p, item);
+                }
+                else
+                {
+                    p.getWorld().dropItemNaturally(p.getLocation(), item);
+                }
+                
                 continue;
             }
             
@@ -225,14 +235,31 @@ public class EventListener implements Listener
                 if(toGive > 64)
                 {
                     item.setAmount(64);
-
-                    p.getWorld().dropItemNaturally(p.getLocation(), item);
+    
+    
+                    if(bomb.doAutoSell())
+                    {
+                        sellItem(p, item);
+                    }
+                    else
+                    {
+                        p.getWorld().dropItemNaturally(p.getLocation(), item);
+                    }
+                    
                     toGive -= 64;
                 }
                 else
                 {
                     item.setAmount(toGive);
-                    p.getWorld().dropItemNaturally(p.getLocation(), item);
+                    
+                    if(bomb.doAutoSell())
+                    {
+                        sellItem(p, item);
+                    }
+                    else
+                    {
+                        p.getWorld().dropItemNaturally(p.getLocation(), item);
+                    }
                 }
         
             }
@@ -241,7 +268,22 @@ public class EventListener implements Listener
         brokenBlocks.clear();
         stuff.clear();
     }
-
+    
+    private void sellItem(Player p, ItemStack item)
+    {
+        if(cfg.getBool("hooks.shopguiplus"))
+        {
+            double sellPrice = ShopGuiPlusApi.getItemStackPriceSell(item);
+            
+            if(sellPrice > 0)
+            {
+                Economy econ = SimpleBombs.getEconomy();
+                
+                econ.depositPlayer(p, sellPrice);
+            }
+        }
+    }
+    
     private ItemStack getSmeltedItem(ItemStack item) 
     {
         ItemStack result = null;
@@ -364,10 +406,18 @@ public class EventListener implements Listener
         {
             for (Block b : explodedBlocks)
             {
+                String name = b.getType().name().toUpperCase();
+                
+                if(!bomb.doDestroyBlocks())
+                {
+                    if(!name.contains("WATER") || !name.contains("LAVA"))
+                    {
+                        continue;
+                    }
+                }
+                
                 if(!bomb.doDestroyLiquids())
                 {
-                    String name = b.getType().name().toUpperCase();
-            
                     if(name.contains("WATER") || name.contains("LAVA")
                             || b.getType().equals(Material.BEDROCK))
                     {
@@ -377,11 +427,11 @@ public class EventListener implements Listener
         
                 if(bomb.hasCheckedBlocks())
                 {
-                    if(bomb.destroyIsWhitelist() && bomb.containsCheckedBlock(b.getType().name().toUpperCase()))
+                    if(bomb.destroyIsWhitelist() && bomb.containsCheckedBlock(name))
                     {
                         b.setType(Material.AIR);
                     }
-                    else if(!bomb.destroyIsWhitelist() && !bomb.containsCheckedBlock(b.getType().name().toUpperCase()))
+                    else if(!bomb.destroyIsWhitelist() && !bomb.containsCheckedBlock(name))
                     {
                         b.setType(Material.AIR);
                     }

@@ -55,7 +55,12 @@ public class Utils
     
     public static String setPlaceholders(String text, Player p, Bomb bomb)
     {
-        return setPlaceholders(PlaceholderAPI.setPlaceholders(p, text), bomb);
+        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
+        {
+            text = PlaceholderAPI.setPlaceholders(p, text);
+        }
+        
+        return setPlaceholders(text, bomb);
     }
     
     public static String setPlaceholders(String text, Bomb bomb)

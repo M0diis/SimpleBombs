@@ -10,6 +10,9 @@ usage: |
   &a /bomb gui &8- &7open bomb list.
   &a /bomb reload &8- &7reload the config.
 
+hooks:
+  shopguiplus: false
+
 bombs:
   1: # ID
     name: '&aBomb &f&l1'
@@ -35,6 +38,7 @@ bombs:
       explode: 'ENTITY_GENERIC_EXPLODE'
     destroy-liquids: true
     destroy-blocks: true
+    auto-sell: true
     smelt: 
       enable: true
       whitelist: true
