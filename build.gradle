@@ -79,12 +79,11 @@ dependencies {
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.5'
     compileOnly 'com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.4.9'
     compileOnly 'me.clip:placeholderapi:2.11.1'
-    compileOnly "com.github.MilkBowl:VaultAPI:1.7"
+    compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
 
     implementation 'org.bstats:bstats-bukkit:3.0.0'
-    implementation "dev.triumphteam:triumph-gui:3.1.2"
+    implementation 'dev.triumphteam:triumph-gui:3.1.2'
     implementation 'com.github.brcdev-minecraft:shopgui-api:2.2.0'
-
 
     implementation 'com.github.seeseemelk:MockBukkit:v1.16-SNAPSHOT'
 
