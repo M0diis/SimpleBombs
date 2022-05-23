@@ -10,23 +10,24 @@ sourceCompatibility = 8
 targetCompatibility = 8
 
 group 'me.m0dii'
-version '1.6.0'
+version '2.0.0'
 
 shadowJar {
     relocate "org.bstats", "me.m0dii.metrics"
     relocate "dev.triumphteam.gui", "me.m0dii.gui"
-    relocate "net.brcdev.shopgui", "me.m0dii.shopgui"
+
+    minimize()
 
     archiveFileName = "SimpleBombs-${version}.jar"
 }
 
-processResources {
-    eachFile {
-        if (file.name.endsWith(".yml")) {
-            expand version: version
-        }
-    }
-}
+//processResources {
+//    eachFile {
+//        if (file.name.endsWith(".yml")) {
+//            expand version: version
+//        }
+//    }
+//}
 
 repositories {
     mavenLocal()
@@ -81,7 +82,6 @@ dependencies {
 
     implementation 'org.bstats:bstats-bukkit:3.0.0'
     implementation 'dev.triumphteam:triumph-gui:3.1.2'
-    implementation 'com.github.brcdev-minecraft:shopgui-api:2.2.0'
 
     implementation 'com.github.seeseemelk:MockBukkit:v1.16-SNAPSHOT'
 

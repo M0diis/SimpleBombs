@@ -18,6 +18,230 @@ import java.util.stream.Collectors;
 
 public class Bomb
 {
+    public static class Builder
+    {
+        private int id;
+    
+        private String permission;
+    
+        private String name;
+        private Material material;
+        private List<String> lore;
+    
+        private int radius;
+        private int fortune;
+        private int time;
+        private double throwStrength;
+    
+        private String hologramText;
+    
+        private Particle effect;
+        private Sound throwSound = null;
+        private Sound explodeSound = null;
+    
+        private boolean autoSell = false;
+        private boolean destroyBlocks = true;
+        private boolean destroyLiquids;
+        private int entityDamage;
+        private boolean glowing;
+    
+        private BombType type;
+    
+        private final Map<String, String> customProperties = new HashMap<>();
+        private final List<String> checkedBlocks = new ArrayList<>();
+        private final List<String> smeltBlocks = new ArrayList<>();
+    
+        private boolean ignorePerm;
+        private boolean sendMessage;
+    
+        private boolean destroyIsWhitelist = true;
+        private boolean smeltIsWhitelist = true;
+        private boolean smeltIsEnabled = false;
+    
+        public Builder setId(int id)
+        {
+            this.id = id;
+            return this;
+        }
+        
+        public Builder setGlowing(boolean glowing)
+        {
+            this.glowing = glowing;
+            return this;
+        }
+    
+        public Builder setPermission(String permission)
+        {
+            this.permission = permission;
+            return this;
+        }
+    
+        public Builder setName(String name)
+        {
+            this.name = name;
+            return this;
+        }
+    
+        public Builder setMaterial(Material material)
+        {
+            this.material = material;
+            return this;
+        }
+    
+        public Builder setLore(List<String> lore)
+        {
+            this.lore = lore;
+            return this;
+        }
+    
+        public Builder setRadius(int radius)
+        {
+            this.radius = radius;
+            return this;
+        }
+    
+        public Builder setFortune(int fortune)
+        {
+            this.fortune = fortune;
+            return this;
+        }
+    
+        public Builder setTime(int time)
+        {
+            this.time = time;
+            return this;
+        }
+    
+        public Builder setThrowStrength(double throwStrength)
+        {
+            this.throwStrength = throwStrength;
+            return this;
+        }
+    
+        public Builder setHologramText(String hologramText)
+        {
+            this.hologramText = hologramText;
+            return this;
+        }
+    
+        public Builder setEffect(Particle effect)
+        {
+            this.effect = effect;
+            return this;
+        }
+    
+        public Builder setEffect(String effect)
+        {
+            this.effect = Particle.valueOf(effect.toUpperCase());
+            return this;
+        }
+    
+        public Builder setThrowSound(Sound throwSound)
+        {
+            this.throwSound = throwSound;
+            return this;
+        }
+    
+        public Builder setThrowSound(String throwSound)
+        {
+            this.throwSound = Sound.valueOf(throwSound.toUpperCase());
+            return this;
+        }
+    
+        public Builder setExplodeSound(Sound explodeSound)
+        {
+            this.explodeSound = explodeSound;
+            return this;
+        }
+        
+        public Builder setExplodeSound(String explodeSound)
+        {
+            this.explodeSound = Sound.valueOf(explodeSound.toUpperCase());
+            return this;
+        }
+    
+        public Builder setAutoSell(boolean autoSell)
+        {
+            this.autoSell = autoSell;
+            return this;
+        }
+    
+        public Builder setDestroyBlocks(boolean destroyBlocks)
+        {
+            this.destroyBlocks = destroyBlocks;
+            return this;
+        }
+    
+        public Builder setDestroyLiquids(boolean destroyLiquids)
+        {
+            this.destroyLiquids = destroyLiquids;
+            return this;
+        }
+        
+        public Builder setEntityDamage(int entityDamage)
+        {
+            this.entityDamage = entityDamage;
+            return this;
+        }
+        
+        public Builder setIgnorePerm(boolean ignorePerm)
+        {
+            this.ignorePerm = ignorePerm;
+            return this;
+        }
+        
+        public Builder setSendMessage(boolean sendMessage)
+        {
+            this.sendMessage = sendMessage;
+            return this;
+        }
+        
+        public Builder setDestroyIsWhitelist(boolean destroyIsWhitelist)
+        {
+            this.destroyIsWhitelist = destroyIsWhitelist;
+            return this;
+        }
+        
+        public Builder setSmeltIsWhitelist(boolean smeltIsWhitelist)
+        {
+            this.smeltIsWhitelist = smeltIsWhitelist;
+            return this;
+        }
+        
+        public Builder setSmeltIsEnabled(boolean smeltIsEnabled)
+        {
+            this.smeltIsEnabled = smeltIsEnabled;
+            return this;
+        }
+    
+        public Bomb build()
+        {
+            return new Bomb(this);
+        }
+    }
+    
+    public Bomb(Builder builder)
+    {
+        this.id = builder.id;
+        this.permission = builder.permission;
+        this.name = builder.name;
+        this.material = builder.material;
+        this.lore = builder.lore;
+        this.radius = builder.radius;
+        this.fortune = builder.fortune;
+        this.time = builder.time;
+        this.throwStrength = builder.throwStrength;
+        this.hologramText = builder.hologramText;
+        this.effect = builder.effect;
+        this.throwSound = builder.throwSound;
+        this.explodeSound = builder.explodeSound;
+        this.autoSell = builder.autoSell;
+        this.destroyBlocks = builder.destroyBlocks;
+        this.destroyLiquids = builder.destroyLiquids;
+        this.entityDamage = builder.entityDamage;
+        this.glowing = builder.glowing;
+    }
+    
     private final int id;
     
     private final String permission;
@@ -43,11 +267,11 @@ public class Bomb
     private int entityDamage;
     private boolean glowing;
     
-    private BombType type;
+    private BombType type = BombType.BASIC;
     
-    private final Map<String, String> customProperties = new HashMap<>();
-    private final List<String> checkedBlocks = new ArrayList<>();
-    private final List<String> smeltBlocks = new ArrayList<>();
+    private Map<String, String> customProperties = new HashMap<>();
+    private List<String> checkedBlocks = new ArrayList<>();
+    private List<String> smeltBlocks = new ArrayList<>();
 
     private boolean ignorePerm;
     private boolean sendMessage;
@@ -55,7 +279,6 @@ public class Bomb
     private boolean destroyIsWhitelist = true;
     private boolean smeltIsWhitelist = true;
     private boolean smeltIsEnabled = false;
-
     
     public Bomb(int id, String name, Material material, List<String> lore, double throwStrength, int radius, int fortune,
                 int time,
@@ -155,6 +378,11 @@ public class Bomb
         return copy;
     }
     
+    public static Builder builder()
+    {
+        return new Builder();
+    }
+
     public void setSendMessage(boolean sendMessage)
     {
         this.sendMessage = sendMessage;
@@ -374,5 +602,29 @@ public class Bomb
     public boolean doAutoSell()
     {
         return autoSell;
+    }
+    
+    @Override
+    public String toString()
+    {
+        return "Bomb{" +
+                "material=" + material +
+                ", name='" + name + '\'' +
+                ", radius=" + radius +
+                ", time=" + time +
+                ", fortune=" + fortune +
+                ", effect=" + effect +
+                ", throwSound=" + throwSound +
+                ", explodeSound=" + explodeSound +
+                ", permission='" + permission + '\'' +
+                ", hologramText='" + hologramText + '\'' +
+                ", throwStrength=" + throwStrength +
+                ", destroyBlocks=" + destroyBlocks +
+                ", destroyLiquids=" + destroyLiquids +
+                ", entityDamage=" + entityDamage +
+                ", glowing=" + glowing +
+                ", type=" + type +
+                ", autoSell=" + autoSell +
+                '}';
     }
 }

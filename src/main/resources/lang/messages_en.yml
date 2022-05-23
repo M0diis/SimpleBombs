@@ -1,0 +1,13 @@
+config-reloaded: '&aReloaded the config!'
+explosion-message: '&aYou have set a tier %tier% prison bomb off!'
+no-permission-command: '&aYou do not have the right permission for this command.'
+no-permission-bomb: '&aYou do not have the right permission for this bomb.'
+bomb-received: '&aYou have received a tier &2%tier% &aprison bomb (x%amount%).'
+invalid-player: '&aPlayer was not found.'
+invalid-bomb-id: '&aThis bomb ID is not valid.'
+invalid-number-format: '&cInvalid number format.'
+items-sold: '&aYou have sold %amount% items for &2%price%&a$.'
+usage: |
+  &a /bomb give <player> <bombID> [amount] &8- &7give a player a bomb.
+  &a /bomb gui &8- &7open bomb list.
+  &a /bomb reload &8- &7reload the config.

@@ -1,18 +1,4 @@
-config-reloaded: '&aReloaded the config!'
-explosion-message: '&aYou have set a tier %tier% prison bomb off!'
-no-permission-command: '&aYou do not have the right permission for this command.'
-no-permission-bomb: '&aYou do not have the right permission for this bomb.'
-bomb-received: '&aYou have received a tier &2%tier% &aprison bomb (x%amount%).'
-invalid-player: '&aPlayer was not found.'
-invalid-bomb-id: '&aThis bomb ID is not valid.'
-usage: |
-  &a /bomb give <player> <bombID> [amount] &8- &7give a player a bomb.
-  &a /bomb gui &8- &7open bomb list.
-  &a /bomb reload &8- &7reload the config.
-
-hooks:
-  shopguiplus: false
-
+locale: en
 bombs:
   1: # ID
     name: '&aBomb &f&l1'
@@ -26,6 +12,7 @@ bombs:
     # %amount% - The amount of the bomb.
     # %fortune% - The fortune level of the bomb.
     # %damage% - The damage of the bomb.
+    auto-sell: false
     fortune: 1 # How many times the drops will be doubled. (1 = normal, 2 = double, 3 = triple, etc.)
     radius: 3 # Item drops increases by 2.5 for every broken block.
     permission: 'simplebombs.tier.1' # Without this permission, the player won't be able to use this bomb.
@@ -38,7 +25,6 @@ bombs:
       explode: 'ENTITY_GENERIC_EXPLODE'
     destroy-liquids: true
     destroy-blocks: true
-    auto-sell: true
     smelt: 
       enable: true
       whitelist: true
@@ -58,6 +44,7 @@ bombs:
     glowing: true
     lore:
       - '&cRight click this to throw it.'
+    auto-sell: false
     fortune: 2
     radius: 2
     permission: 'simplebombs.tier.2'
@@ -86,6 +73,7 @@ bombs:
     glowing: true
     lore:
       - '&cRight click this to throw it.'
+    auto-sell: false
     fortune: 1
     radius: 2
     permission: 'simplebombs.tier.3'

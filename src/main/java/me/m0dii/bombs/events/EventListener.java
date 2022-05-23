@@ -3,10 +3,11 @@ package me.m0dii.bombs.events;
 import me.m0dii.bombs.SimpleBombs;
 import me.m0dii.bombs.bomb.Bomb;
 import me.m0dii.bombs.bomb.BombType;
-import me.m0dii.bombs.utils.Config;
+import me.m0dii.bombs.utils.config.Config;
 import me.m0dii.bombs.utils.HologramUtils;
 import me.m0dii.bombs.utils.Utils;
-import net.brcdev.shopgui.ShopGuiPlusApi;
+import me.m0dii.bombs.utils.config.LangConfig;
+import me.m0dii.bombs.utils.config.PriceConfig;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -33,12 +34,21 @@ import java.util.*;
 public class EventListener implements Listener
 {
     private final SimpleBombs plugin;
+    
+    private final Economy economy;
+    
+    private final PriceConfig priceConfig;
+    private final LangConfig langConfig;
     private final Config cfg;
     
     public EventListener(final SimpleBombs plugin)
     {
         this.plugin = plugin;
         this.cfg = plugin.getCfg();
+        this.priceConfig = plugin.getPriceCfg();
+        this.langConfig = plugin.getLangCfg();
+        
+        this.economy = plugin.getEconomy();
     }
     
     @EventHandler
@@ -124,7 +134,6 @@ public class EventListener implements Listener
                     }
                     else if(!bomb.destroyIsWhitelist() && !bomb.containsCheckedBlock(type.name().toUpperCase()))
                     {
-    
                         if(!brokenBlocks.contains(type.name()))
                         {
                             brokenBlocks.add(type.name());
@@ -167,6 +176,9 @@ public class EventListener implements Listener
             ingot_stuff.put(blockName, stuff.get(blockName));
         }
         
+        double totalSum = 0;
+        int totalAmount = 0;
+        
         for (String id : ingots)
         {
             int amount = ingot_stuff.get(id);
@@ -193,10 +205,9 @@ public class EventListener implements Listener
             {
                 continue;
             }
-
+            
             ItemStack item = new ItemStack(material);
             
-
             if(bomb.isSmeltEnabled())
             {
                 if(bomb.smeltIsWhitelist())
@@ -211,14 +222,18 @@ public class EventListener implements Listener
                     item = getSmeltedItem(item);
                 }
             }
+    
+            double price = priceConfig.getPrice(item.getType().name().toUpperCase());
 
             if(amount <= 64)
             {
                 item.setAmount(amount);
     
-                if(bomb.doAutoSell())
+                if(bomb.doAutoSell() && price > 0)
                 {
-                    sellItem(p, item);
+                    totalAmount += amount;
+    
+                    totalSum += price * amount;
                 }
                 else
                 {
@@ -236,10 +251,11 @@ public class EventListener implements Listener
                 {
                     item.setAmount(64);
     
-    
-                    if(bomb.doAutoSell())
+                    if(bomb.doAutoSell() && price > 0)
                     {
-                        sellItem(p, item);
+                        totalAmount += 64;
+    
+                        totalSum += price * 64;
                     }
                     else
                     {
@@ -254,7 +270,9 @@ public class EventListener implements Listener
                     
                     if(bomb.doAutoSell())
                     {
-                        sellItem(p, item);
+                        totalAmount += toGive;
+                        
+                        totalSum += price * toGive;
                     }
                     else
                     {
@@ -267,22 +285,19 @@ public class EventListener implements Listener
         
         brokenBlocks.clear();
         stuff.clear();
-    }
-    
-    private void sellItem(Player p, ItemStack item)
-    {
-        if(cfg.getBool("hooks.shopguiplus"))
+        
+        if(bomb.doAutoSell() && totalSum > 0)
         {
-            double sellPrice = ShopGuiPlusApi.getItemStackPriceSell(item);
+            economy.depositPlayer(p, totalSum);
             
-            if(sellPrice > 0)
-            {
-                Economy econ = SimpleBombs.getEconomy();
-                
-                econ.depositPlayer(p, sellPrice);
-            }
+            String msg = langConfig.getStrfp("items-sold", p)
+                    .replace("%price%", String.valueOf(totalSum))
+                    .replace("%amount%", String.valueOf(totalAmount));
+            
+            p.sendMessage(msg);
         }
     }
+    
     
     private ItemStack getSmeltedItem(ItemStack item) 
     {

@@ -1,16 +1,11 @@
 package me.m0dii.bombs.commands;
 
-import dev.triumphteam.gui.builder.item.ItemBuilder;
-import dev.triumphteam.gui.guis.Gui;
-import dev.triumphteam.gui.guis.PaginatedGui;
 import me.m0dii.bombs.SimpleBombs;
 import me.m0dii.bombs.bomb.Bomb;
-import me.m0dii.bombs.utils.Config;
+import me.m0dii.bombs.utils.config.Config;
 import me.m0dii.bombs.utils.InventoryUtils;
-import me.m0dii.bombs.utils.Utils;
-import net.kyori.adventure.text.Component;
+import me.m0dii.bombs.utils.config.LangConfig;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -26,21 +21,24 @@ public class BombCommand implements CommandExecutor, TabCompleter
 {
     private final SimpleBombs plugin;
     
+    private final LangConfig langCfg;
     private final Config cfg;
     
     public BombCommand(SimpleBombs plugin)
     {
         this.plugin = plugin;
         
+        this.langCfg = plugin.getLangCfg();
         this.cfg = plugin.getCfg();
     }
     
     @Override
-    public boolean onCommand(CommandSender sender, @Nonnull Command command, @Nonnull String label, @Nonnull String[] args)
+    public boolean onCommand(@Nonnull CommandSender sender, @Nonnull Command command,
+                             @Nonnull String label, @Nonnull String[] args)
     {
         if(!sender.hasPermission("simplebombs.use"))
         {
-            sender.sendMessage(cfg.getStrfp("no-permission-command", sender));
+            sender.sendMessage(langCfg.getStrfp("no-permission-command", sender));
         
             return true;
         }
@@ -54,7 +52,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
     {
         if(args.length == 0)
         {
-            sender.sendMessage(cfg.getStrfp("usage", sender));
+            sender.sendMessage(langCfg.getStrfp("usage", sender));
         
             return;
         }
@@ -65,14 +63,14 @@ public class BombCommand implements CommandExecutor, TabCompleter
             {
                 if(!sender.hasPermission("simplebombs.command.reload"))
                 {
-                    sender.sendMessage(cfg.getStrfp("no-permission-command", sender));
+                    sender.sendMessage(langCfg.getStrfp("no-permission-command", sender));
         
                     return;
                 }
     
                 plugin.getCfg().reload();
     
-                sender.sendMessage(cfg.getStrf("config-reloaded"));
+                sender.sendMessage(langCfg.getStrf("config-reloaded"));
     
                 return;
             }
@@ -81,7 +79,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
             {
                 if(!sender.hasPermission("simplebombs.command.gui"))
                 {
-                    sender.sendMessage(cfg.getStrfp("no-permission-command", sender));
+                    sender.sendMessage(langCfg.getStrfp("no-permission-command", sender));
         
                     return;
                 }
@@ -99,14 +97,14 @@ public class BombCommand implements CommandExecutor, TabCompleter
         {
             if(!sender.hasPermission("simplebombs.command.give"))
             {
-                sender.sendMessage(cfg.getStrfp("no-permission-command", sender));
+                sender.sendMessage(langCfg.getStrfp("no-permission-command", sender));
         
                 return;
             }
             
             if(args[1] == null)
             {
-                sender.sendMessage(cfg.getStrfp("usage", sender));
+                sender.sendMessage(langCfg.getStrfp("usage", sender));
             
                 return;
             }
@@ -115,7 +113,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
     
             if(receiver == null || !receiver.isOnline())
             {
-                sender.sendMessage(cfg.getStrfp("invalid-player", sender));
+                sender.sendMessage(langCfg.getStrfp("invalid-player", sender));
     
                 return;
             }
@@ -126,13 +124,16 @@ public class BombCommand implements CommandExecutor, TabCompleter
             {
                 id = Integer.parseInt(args[2]);
             }
-            catch(NumberFormatException ignored) { }
+            catch(NumberFormatException ignored)
+            {
+                sender.sendMessage(langCfg.getStrfp("invalid-number-format", sender));
+            }
     
             Bomb bomb = plugin.getBomb(id);
     
             if(bomb == null)
             {
-                sender.sendMessage(cfg.getStrfp("invalid-bomb-id", sender));
+                sender.sendMessage(langCfg.getStrfp("invalid-bomb-id", sender));
 
                 return;
             }
@@ -145,7 +146,10 @@ public class BombCommand implements CommandExecutor, TabCompleter
                 {
                     amount = Integer.parseInt(args[3]);
                 }
-                catch(NumberFormatException ignored) { }
+                catch(NumberFormatException ignored)
+                {
+                    sender.sendMessage(langCfg.getStrfp("invalid-number-format", sender));
+                }
             }
     
             ItemStack item = plugin.getBomb(id).getItemStack();
@@ -154,7 +158,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
     
             receiver.getInventory().addItem(item);
     
-            String msg = cfg.getStrfp("bomb-received", sender);
+            String msg = langCfg.getStrfp("bomb-received", sender);
             
             if(msg != null)
             {
@@ -165,7 +169,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
             return;
         }
     
-        sender.sendMessage(cfg.getStrfp("usage", sender));
+        sender.sendMessage(langCfg.getStrfp("usage", sender));
     }
     
     @Override

@@ -9,10 +9,12 @@ import me.m0dii.bombs.bomb.Bomb;
 import me.m0dii.bombs.bomb.BombTime;
 import me.m0dii.bombs.commands.BombCommand;
 import me.m0dii.bombs.events.EventListener;
-import me.m0dii.bombs.utils.Config;
+import me.m0dii.bombs.utils.config.Config;
 import me.m0dii.bombs.utils.HologramUtils;
 import me.m0dii.bombs.utils.UpdateChecker;
 import me.m0dii.bombs.utils.Utils;
+import me.m0dii.bombs.utils.config.LangConfig;
+import me.m0dii.bombs.utils.config.PriceConfig;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SingleLineChart;
@@ -71,6 +73,20 @@ public class SimpleBombs extends JavaPlugin
         return testMode;
     }
     
+    private LangConfig langCfg;
+    
+    public LangConfig getLangCfg()
+    {
+        return langCfg;
+    }
+    
+    private PriceConfig priceCfg;
+    
+    public PriceConfig getPriceCfg()
+    {
+        return priceCfg;
+    }
+    
     /**
      * Get bomb by id.
      * @see Bomb for Bomb class.
@@ -87,7 +103,9 @@ public class SimpleBombs extends JavaPlugin
     {
         instance = this;
         
-        cfg = new Config(this);
+        setupEconomy();
+    
+        setupConfigurations();
     
         PluginCommand cmd = getCommand("bomb");
         
@@ -108,30 +126,46 @@ public class SimpleBombs extends JavaPlugin
         {
             setupMetrics();
         }
-    
-        setupEconomy();
     }
     
-    private static Economy econ;
+    private void setupConfigurations()
+    {
+        cfg = new Config(this);
+        
+        langCfg = new LangConfig(this, getConfig().getString("locale"));
+        
+        priceCfg = new PriceConfig(this);
+    }
     
-    public static Economy getEconomy()
+    private Economy econ;
+    
+    public Economy getEconomy()
     {
         return econ;
     }
     
     private void setupEconomy()
     {
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(Economy.class);
-        
-        if (economyProvider != null)
+        if(getServer().getPluginManager().getPlugin("Vault") == null)
         {
-            econ = economyProvider.getProvider();
+            getLogger().warning("Vault not found. Auto-Sell will not work.");
+            
+            return;
+        }
+    
+        RegisteredServiceProvider<Economy> provider = getServer().getServicesManager()
+                .getRegistration(Economy.class);
+        
+        if (provider != null)
+        {
+            econ = provider.getProvider();
         }
     }
     
     /**
      * Register WorldGuard flag.
      */
+    @Override
     public void onLoad()
     {
         if(!isTestMode())
