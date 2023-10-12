@@ -19,4 +19,9 @@ public class PriceConfig extends AbstractConfig
     {
         return config.getDouble(item, 0.0);
     }
+    
+    public void reload()
+    {
+        super.reloadConfig();
+    }
 }

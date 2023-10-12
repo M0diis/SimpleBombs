@@ -5,6 +5,7 @@ import me.m0dii.bombs.bomb.Bomb;
 import me.m0dii.bombs.utils.config.Config;
 import me.m0dii.bombs.utils.InventoryUtils;
 import me.m0dii.bombs.utils.config.LangConfig;
+import me.m0dii.bombs.utils.config.PriceConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,6 +22,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
 {
     private final SimpleBombs plugin;
     
+    private final PriceConfig priceCfg;
     private final LangConfig langCfg;
     private final Config cfg;
     
@@ -29,6 +31,7 @@ public class BombCommand implements CommandExecutor, TabCompleter
         this.plugin = plugin;
         
         this.langCfg = plugin.getLangCfg();
+        this.priceCfg = plugin.getPriceCfg();
         this.cfg = plugin.getCfg();
     }
     
@@ -69,6 +72,10 @@ public class BombCommand implements CommandExecutor, TabCompleter
                 }
     
                 plugin.getCfg().reload();
+                
+                langCfg.reload();
+                
+                priceCfg.reload();
     
                 sender.sendMessage(langCfg.getStrf("config-reloaded"));
     

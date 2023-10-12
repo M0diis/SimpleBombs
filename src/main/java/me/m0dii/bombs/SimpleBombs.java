@@ -29,16 +29,6 @@ import java.io.File;
 
 public class SimpleBombs extends JavaPlugin
 {
-    public SimpleBombs()
-    {
-        super();
-    }
-    
-    protected SimpleBombs(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file)
-    {
-        super(loader, description, dataFolder, file);
-    }
-    
     /**
      * The plugin instance.
      */

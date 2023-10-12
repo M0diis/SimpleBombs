@@ -1,7 +1,7 @@
 name: SimpleBombs
 author: M0dii
 main: me.m0dii.bombs.SimpleBombs
-version: 2.0.0
+version: 2.0.1
 softdepend: [WorldGuard, WorldEdit, HolographicDisplays, DecentHolograms, PlaceholderAPI]
 api-version: 1.13
 commands:

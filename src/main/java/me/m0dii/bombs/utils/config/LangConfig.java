@@ -38,4 +38,9 @@ public class LangConfig extends AbstractConfig
     {
         return getString(path);
     }
+    
+    public void reload()
+    {
+        super.reloadConfig();
+    }
 }
